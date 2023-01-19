@@ -1,0 +1,22 @@
+@media screen and (min-width:1000px) {
+    .table-cont .table-select{
+        padding: 5px !important;
+        margin: 15px !important;
+        /* color: red !important; */
+    }
+    .responsive .card{
+        width: 25rem !important;
+    }
+}
+
+@media screen and (max-width:1000px) {
+    .table-cont .table-select{
+        font-size: 80%;
+        padding: 1px !important; 
+        margin: 2px !important;
+        /* color: red !important; */
+    }
+    .responsive .card{
+        width: fit-content !important;
+    }
+}

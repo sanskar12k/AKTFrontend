@@ -1,0 +1,9 @@
+.card{
+    width: 30vw !important;
+    /* height: 200vh !important; */
+    margin-top: 20px;
+    padding-bottom: 10px !important;
+}
+.report{
+    padding-top: 20px !important;
+}
