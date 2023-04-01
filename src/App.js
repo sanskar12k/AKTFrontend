@@ -15,28 +15,27 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import NavBar from './components/Nvbr';
 import { useState, useEffect } from 'react';
 import api from './pages/api';
-import Profile from './pages/profile'
+import Profile from './pages/profile';
+import { AuthProvider } from './Context/Auth';
 function App() {
   const [login, setLogin] = useState(false)
   const [user, setUser] = useState();
   return (
     <>
-      
-    <Router>
-    <div className="App container">
-    {/* <NavBar user={user}/> */}
-      <Routes>
-        <Route exact path='/' element={<Dashboard/>}/>
-        <Route path='/create' element={<Create/>}/>
-        <Route path='/login' element={<Login/>}/>
-        <Route path='/addreport' element={<AddReport/>}/>
-        <Route path='/profile' element={<Profile/>}/>
-        <Route path='/alluser' element={<Alluser/>}/>
-      </Routes>
-    </div>
-    {/* <NavBar/> */}
-    </Router>
-    
+      <Router>
+        <AuthProvider>
+          <div className="App container">
+            <Routes>
+              <Route exact path="/" element={<Dashboard />} />
+              <Route path='/create' element={<Create />} />
+              <Route path='/login' element={<Login />} />
+              <Route path='/addreport' element={<AddReport />} />
+              <Route path='/profile/:userId' element={<Profile />} />
+              <Route path='/alluser' element={<Alluser />} />
+            </Routes>
+          </div>
+        </AuthProvider>
+      </Router>
     </>
   );
 }

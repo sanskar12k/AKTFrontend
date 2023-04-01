@@ -2,15 +2,16 @@ import { useState, useEffect } from 'react';
 import 'react-toastify/dist/ReactToastify.css';
 import Button from '@mui/material/Button';
 import { ToastContainer, toast } from "react-toastify";
-import DeleteIcon from '@mui/icons-material/Delete';
-import './login.css'
-import api from './api'
+import { DataGrid, GridColDef, GridToolbarExport } from '@mui/x-data-grid';
 import { useNavigate, useParams } from 'react-router-dom';
 import NavBar from '../components/Nvbr';
 import { Box, Card, CardContent, Grid, IconButton, LinearProgress, Modal, Typography } from '@mui/material';
 import { Edit } from '@mui/icons-material';
+import { useAuth } from '../Context/Auth';
+import './login.css'
+import api from './api'
 const style = {
-  position: 'absolute' ,
+  position: 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
@@ -20,6 +21,41 @@ const style = {
   boxShadow: 24,
   p: 3,
 };
+
+const columns: GridColDef[] = [
+  {
+    field: 'fname',
+    headerName: 'Name',
+    width: 250
+  },
+  {
+    field: 'role',
+    headerName: 'Role',
+    width: 180,
+  },
+  {
+    field: 'store',
+    headerName: 'Store',
+    width: 180,
+  },
+
+  {
+    field: 'number',
+    headerName: 'Number',
+    width: 180,
+  },
+  {
+    field: 'username',
+    headerName: 'Email',
+    width: 250,
+  }
+];
+
+function CustomToolbar() {
+  return (
+    <GridToolbarExport />
+  );
+}
 
 function User() {
   const navigate = useNavigate();
@@ -32,121 +68,101 @@ function User() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [delUser, setDelUser] = useState();
-  const fetchUser = async () => {
-    try {
-      setLoading(true)
-      const res = await api.post('/user/userPro', { header: document.cookie },{ withCredentials: true });
-      console.log(res);
-      if (!res.data.user) {
-        console.log("kjbn")
-        navigate('/login')
-      }
-      else {
-       setUser(res.data.user)
-        setLogin(true);
-        if (res.data.user.role === 'Owner' || res.data.user.role === 'Manager') {
-          setOwner(true)
-        }
-        else {
-          navigate('/')
-        }
-        setLogin(true);
-        await fetchAlluser();
-      }
-    
-      setLoading(false);
+  const [tableLoad, setLoad] = useState(false);
+  const { curUser, getUser } = useAuth();
+  async function checkRole(){
+    // let user = await getUser();
+    if(curUser?.role === 'Staff'){
+      console.log(curUser)
+      navigate(`/profile/`+curUser?._id)
     }
-    catch (e) {
-      console.log(e)
+    else if(curUser?.role == 'CompOper'){
+      navigate('/addReport')
     }
   }
-
-
-
-  const fetchAlluser = async() => {
-    // await fetchUser();
+  const fetchAlluser = async () => {
+    setLoad(true)
     const users = await api.get(`/user/alluser`,
-    {
-      headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'Authorization':document.cookie
-    },
-    });
-    console.log(users);
-    if (users.status === 200) {
-      setUsers([...users.data.users])
-    }
-  }
-
-
-  const deleteUser = async(id) =>{
-    try{
-      const res = await api.delete( `/user/${id}/delete`,
       {
         headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        
-      },
-        data:{
-          header:document.cookie
-        }
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': document.cookie
+        },
       });
-      console.log(res);
-      if(res.status === 200)
-      {
-        if(res.data.res)
+    console.log(users);
+    if (users.status === 200) {
+      setUsers(users.data.users.map(e => {
+        if (e.fname) e.fname = `${e.fname} ${e.lname}`
+        return { ...e }
+      }))
+    }
+    setLoad(false)
+  }
+
+
+  const deleteUser = async (id) => {
+    try {
+      const res = await api.delete(`/user/${id}/delete`,
         {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+
+          },
+          data: {
+            header: document.cookie
+          }
+        });
+      console.log(res);
+      if (res.status === 200) {
+        if (res.data.res) {
           toast.success("User Deleted successfully", {
-           position: "top-center",
-           }
-      );
-      fetchAlluser();
-      
-    }
-      else{
-        toast.warn("User not found",{
-          position:"top-center",
-        })
+            position: "top-center",
+          }
+          );
+          fetchAlluser();
+
+        }
+        else {
+          toast.warn("User not found", {
+            position: "top-center",
+          })
+        }
+        handleClose();
       }
-    handleClose();
     }
-    }
-    catch(err){
+    catch (err) {
       console.log(err)
     }
   }
-
-
   useEffect(() => {
-    // fetchAlluser();
-    fetchUser();
+   checkRole();
+   fetchAlluser();
   }, [])
 
   return (
     <>
       {loading && <LinearProgress />}
-      {!loading && login && owner &&
+      {!loading && curUser &&
         <>
-        
-<Modal
-  open={open}
-  onClose={handleClose}
-  aria-labelledby="modal-modal-title"
-  aria-describedby="modal-modal-description"
->
-  <Box sx={style}>
-    <Typography id="modal-modal-title" variant="h6" component="p">
-      Are you sure you want to delete this user?
-      {/* <Button onClick={() => {deleteUser(delUser)}}>Delete</Button> */}
-    </Typography>
-    <Typography id="modal-modal-description" sx={{ mt: 2 }} align='center' >
-    <Button align='center' variant='contained' color='error' onClick={() => {deleteUser(delUser)}}>Delete</Button>
-          </Typography>
-  </Box>
-</Modal>
-          <NavBar user={user} />
+
+          <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={style}>
+              <Typography id="modal-modal-title" variant="h6" component="p">
+                Are you sure you want to delete this user?
+              </Typography>
+              <Typography id="modal-modal-description" sx={{ mt: 2 }} align='center' >
+                <Button align='center' variant='contained' color='error' onClick={() => { deleteUser(delUser) }}>Delete</Button>
+              </Typography>
+            </Box>
+          </Modal>
+          <NavBar user={curUser} />
           <div className="shadow  container p-4">
             <h1 style={{
               mr: 2,
@@ -156,52 +172,27 @@ function User() {
               letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none',
-            }}>Users</h1>
-            <Grid container spacing={3}>
-                {users.map((user) => 
-                  (
-                  <>
-                    <Grid item xs={12} sm={6} md={4}  key={user._id}>
-                    <Card>
-                    <Grid container spacing={1}>
-                    <Grid item xs={4}>
-                        <img src="https://picsum.photos/id/237/130/200" alt="Profile" /> 
-                      </Grid>
-                      <Grid item xs={8} className="ps-0">
-                      <CardContent >
-                        <Typography variant='h6' component="div" paddingBottom={1} align='left'>
-                          {user.fname} {user.lname}
-                        </Typography>
-                        <Typography variant='p'  component="div"  align='left' >
-                          {user.username}
-                        </Typography>
-                        <Typography variant='p' component="div"  align='left' >
-                          {user.role}
-                        </Typography>
-                        <Typography variant='p' component="div"  align='left'>
-                          {user.number}
-                        </Typography>
-                        <Typography variant='p' component="div"  align='right'>
-                        <IconButton aria-label='delete' size="large" align='right'>
-                        <Edit/>
-                       </IconButton>
-                       {/* <Button onClick={() => {handleOpen(); setDelUser(user._id) }}>Open modal</Button> */}
-                        <IconButton aria-label='delete' size="large" align='right' >
-                        <DeleteIcon onClick={() => {handleOpen(); setDelUser(user._id) }} />
-                       </IconButton>
-                        </Typography>
-                      
-                      </CardContent>
-                      </Grid>
-                      </Grid>
-                      
-                    </Card>
-                    </Grid>
-                  </>
-                ))}
-            </Grid>
-
-
+            }}>Employees</h1>
+            <Box>
+              <DataGrid
+                isRowSelectable={true}
+                autoHeight
+                getRowId={(row) => row._id}
+                rows={users}
+                columns={columns}
+                onRowClick={(params, event) => {
+                  if (!event.ignore) {
+                    // console.log(params.id);
+                    navigate(`/profile/${params.id}`)
+                  }
+                }}
+                pageSize={10}
+                rowsPerPageOptions={[10]}
+                loading={tableLoad}
+                experimentalFeatures={{ newEditingApi: true }}
+                components={{ Toolbar: GridToolbarExport }}
+              />
+            </Box>
             <ToastContainer />
           </div>
         </>}

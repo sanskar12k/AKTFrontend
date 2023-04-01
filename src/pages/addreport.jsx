@@ -3,12 +3,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Button from '@mui/material/Button';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { ToastContainer, toast } from "react-toastify";
-import Box from '@mui/material/Box';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import {Box, InputLabel, MenuItem, FormControl, Select} from '@mui/material'; 
 import dayjs, { Dayjs } from 'dayjs';
 import TextField from '@mui/material/TextField';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -16,10 +11,9 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import './login.css'
 import { useNavigate } from 'react-router-dom';
-import api from './api'
 import NavBar from '../components/Nvbr';
-import Skelton from '../skeleton/report';
-import { CircularProgress, LinearProgress } from '@mui/material';
+import { LinearProgress } from '@mui/material';
+import { useAuth } from '../Context/Auth';
 
 function User() {
   const [sale, setSale] = useState(0);
@@ -31,40 +25,12 @@ function User() {
   );
   const [store, setStore] = useState('AKT Old');
   const [loading, setLoading] = useState(false)
-  const [user, setUser] = useState()
   const navigate = useNavigate();
-  const [login, setLogin] = useState(false)
-  const fetchUser = async () => {
-    try {
-      setLoading(true)
-      // console.log(localStorage.getItem('login'))
-      console.log(document.cookie)
-      const res = await api.post('/user/userPro', { header: document.cookie },{ withCredentials: true });
-      console.log(res);
-      if (!res.data.user) {
-        navigate('/login')
-      }
-      else {
-
-        setUser(res.data.user)
-        console.log(res.data.user.role)
-        if(res.data.user.role === 'Staff'){
-          console.log('ss')
-          navigate('/');
-        }
-        setLogin(true)
-      }
-      setLoading(false)
-    }
-    catch (e) {
-      console.log(e)
-      navigate('/login')
-    }
-  }
+  const {curUser} = useAuth();
   const handleChangeStore = (e) => {
     setStore(e.target.value);
   };
-  const handleChange = (newValue: Dayjs | null) => {
+  const handleChange = (newValue) => {
     setValue(newValue);
   };
   const handleSubmit = async (e) => {
@@ -83,9 +49,9 @@ function User() {
           paytm: paytm,
           hdfc: hdfc,
           created: value,
-          added: user._id,
+          added: curUser._id,
           store: store,
-          addedName: user.fname + ' ' + user.lname
+          addedName: curUser.fname + ' ' + curUser.lname
         }),
       })
       const userj = await report.json();
@@ -122,16 +88,12 @@ function User() {
       });
     }
   }
-  useEffect(() => {
-    fetchUser();
-  }, [])
   return (
-    // {!login && }
     <>
       {loading && <LinearProgress/> }
-      {!loading && login && user.role !== 'Staff' &&
+      {!loading && curUser?.role !== 'Staff' &&
       <>
-      <NavBar user={user} />
+      <NavBar user={curUser} />
       <div className="responsive">
        <div className="shadow card report container">
        <h1 style={{
@@ -145,9 +107,6 @@ function User() {
             }}>Daily Report</h1>
         <Box
           component="form"
-          // sx={{
-          //   '& .MuiTextField-root': { m: 1, width: '25ch' },
-          // }}
           sx={{
             // width: 500,
             maxWidth: '100%',
@@ -157,24 +116,29 @@ function User() {
           onSubmit={handleSubmit}
         >
           <div>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}
+            >
               <DatePicker
               fullWidth
                 label="Date"
-                margin="normal"
-                inputFormat="MM/DD/YYYY"
+                margin="dense"
+                inputFormat="DD/MM/YYYY"
                 value={value}
+                align="left"
                 onChange={(newValue) => {
                   setValue(newValue);
                 }}
+                className="date-picker"
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth
+             margin="dense"
+             >
               <InputLabel id="demo-simple-select-helper-label">Store</InputLabel>
               <Select
                 align="left"
-                margin="normal"
+                margin="dense"
                 labelId="role"
                 id="role-select"
                 value={store}
@@ -192,7 +156,7 @@ function User() {
               id="outlined-required"
               label="Sale"
               fullWidth
-              margin="normal"
+              margin="dense"
               InputProps={{ inputProps: { min: 0 } }}
               value={sale}
               type="number"
@@ -201,9 +165,9 @@ function User() {
             <TextField
               required
               fullWidth
-              margin="normal"
               id="outlined-required"
               label="Customers"
+              margin="dense"
               value={customer}
               InputProps={{ inputProps: { min: 0 } }}
               type="number"
@@ -213,7 +177,7 @@ function User() {
             <TextField
               required
               fullWidth
-              margin="normal"
+              margin="dense"
               id="outlined-required"
               label="Paytm"
               InputProps={{ inputProps: { min: 0 } }}
@@ -224,7 +188,7 @@ function User() {
             <TextField
               required
               fullWidth
-              margin="normal"
+              margin="dense"
               id="outlined-required"
               label="HDFC"
               InputProps={{ inputProps: { min: 0 } }}
@@ -232,7 +196,7 @@ function User() {
               value={hdfc}
               onChange={e => setHdfc(e.target.value)}
             />
-            <LoadingButton loading={loading} variant="contained" margin="normal" onClick={handleSubmit}>Submit</LoadingButton>
+            <LoadingButton loading={loading} variant="contained"  onClick={handleSubmit}>Submit</LoadingButton>
           </div>
         </Box>
     

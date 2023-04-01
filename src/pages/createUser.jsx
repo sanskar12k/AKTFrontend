@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react';
 import 'react-toastify/dist/ReactToastify.css';
-import Button from '@mui/material/Button';
 import { ToastContainer, toast } from "react-toastify";
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import {Button, TextField, InputLabel, MenuItem, FormControl, Select, Box, LinearProgress } from '@mui/material';
 import './login.css'
-import api from './api'
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../components/Nvbr';
-import { LinearProgress } from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs, { Dayjs } from 'dayjs';
+import { useAuth } from '../Context/Auth';
 function User() {
+  const [value, setValue] = useState(
+    dayjs(Date.now())
+  );
   const [fname, setFname] = useState('');
   const [lname, setLname] = useState('');
   const [username, setUsername] = useState('');
@@ -23,46 +23,25 @@ function User() {
   const navigate = useNavigate();
   const [login, setLogin] = useState(false)
   const [owner, setOwner] = useState(false)
-  const [user, setUser] = useState();
+  const [store, setStore] = useState('');
   const [loading, setLoading] = useState(false);
-  const fetchUser = async () => {
-    try {
-      setLoading(true)
-      console.log(document.cookie)
-      const res = await api.post('/user/userPro', { header: document.cookie },{ withCredentials: true });
-      console.log(res);
-      if (!res.data.user) {
-
-        console.log("kjbn")
-        navigate('/login')
-        // return redirect('/login')
-      }
-      else {
-        setUser(res.data.user)
-        setLogin(true)
-        if (res.data.user.role === 'Owner' || res.data.user.role === 'Manager') {
-          setOwner(true)
-
-        }
-        else {
-          navigate('/')
-        }
-        setLogin(true)
-      }
-      setLoading(false);
-    }
-    catch (e) { console.log(e) }
-  }
-  useEffect(() => {
-    fetchUser();
-  }, [])
+  const {curUser, getUser} = useAuth();
   const handleChange = (e) => {
     setRole(e.target.value);
   };
+  async function checkRole(){
+    // let user = await getUser();
+    if(curUser?.role === 'Staff'){
+      console.log(curUser)
+      navigate(`/profile/`+curUser?._id)
+    }
+    else if(curUser?.role == 'CompOper'){
+      navigate('/addReport')
+    }
+  }
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log("kjnfd")
       const user = await fetch('http://localhost:3000/user/create', {
         method: "POST",
         headers: {
@@ -76,11 +55,13 @@ function User() {
           username: username,
           password: password,
           number: number,
-          role: role
+          role: role,
+          store: store,
+          dob:value
         }),
       })
       const userj = await user.json();
-      console.log(userj.message);
+      console.log(userj);
       if (userj.message === "User created") {
         setTimeout(() => {
           toast.success("User Added successfully", {
@@ -114,12 +95,16 @@ function User() {
       });
     }
   }
+  useEffect(()=>{
+    checkRole();
+    console.log(curUser)
+  },[])
   return (
     <>
       {loading && <LinearProgress />}
-      {!loading && login && owner &&
+      {!loading && (curUser?.role ==='Owner' || curUser?.role ==='Manager') &&
         <>
-          <NavBar user={user} />
+          <NavBar user={curUser} />
           <div className="responsive">
             <div className="shadow card container">
               <h1 style={{
@@ -127,17 +112,13 @@ function User() {
                 display: { xs: 'none', md: 'flex' },
                 fontFamily: 'Apple Color Emoji',
                 fontWeight: 700,
-                letterSpacing: '.3rem',
+                letterSpacing: '.25rem',
                 color: 'inherit',
                 textDecoration: 'none',
-              }}>ADD USER</h1>
+              }}>ADD EMPLOYEE</h1>
               <Box
                 component="form"
-                // sx={{
-                //   '& .MuiTextField-root': { m: 1, width: '25ch' },
-                // }}
                 sx={{
-                  // width: 500,
                   maxWidth: '100%',
                 }}
                 noValidate
@@ -183,6 +164,20 @@ function User() {
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                   />
+                  <LocalizationProvider dateAdapter={AdapterDayjs} margin="dense" >
+                    <DatePicker
+                      className='date-picker mb-2'
+                      fullWidth
+                      label="Date of Birth"
+                      margin="dense"
+                      inputFormat="DD/MM/YYYY"
+                      value={value}
+                      onChange={(newValue) => {
+                        setValue(newValue);
+                      }}
+                      renderInput={(params) => <TextField {...params} />}
+                    />
+                  </LocalizationProvider>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-helper-label">Role</InputLabel>
                     <Select
@@ -197,19 +192,41 @@ function User() {
                       onChange={handleChange}
                     >
                       <MenuItem value=""></MenuItem>
-                      <MenuItem value="Owner">Owner</MenuItem>
-                      <MenuItem value="Manager">Manager</MenuItem>
+                      {curUser.role === 'Owner' &&
+                       <MenuItem value="Owner">Owner</MenuItem> 
+                      }
+                      {curUser.role === 'Owner' &&
+                          <MenuItem value="Manager">Manager</MenuItem>
+                        }
                       <MenuItem value="CompOper">Computer Operator</MenuItem>
                       <MenuItem value="Staff">Staff</MenuItem>
                     </Select>
                   </FormControl>
+                  <FormControl fullWidth className='mt-3' >
+                    <InputLabel id="demo-simple-select-helper-label">Store</InputLabel>
+                    <Select
+                      required
+                      align="left"
+                      fullWidth
+                      margin="normal"
+                      labelId="store"
+                      id="store-select"
+                      value={store}
+                      label="Store"
+                      onChange={(e) => {
+                        setStore(e.target.value)
+                      }}
+                    >
+                      <MenuItem value=""></MenuItem>
+                      <MenuItem value="AKT Old">AKT Old</MenuItem>
+                      <MenuItem value="AKT New">AKT New</MenuItem>
+                    </Select>
+                  </FormControl>
                   <TextField
-                    // required
                     fullWidth
                     margin="normal"
                     id="outlined-number"
                     label="Contact No."
-                    // type="number"
                     inputProps={{ maxLength: 12 }}
                     value={number}
                     onChange={e => {
@@ -218,10 +235,6 @@ function User() {
                         setNumber(e.target.value);
                       }
                     }}
-
-                  //   InputLabelProps={{
-                  //     shrink: true,
-                  //   }}
                   />
                   <Button variant="contained" margin="normal" onClick={handleSubmit}>Add User</Button>
                 </div>
@@ -236,22 +249,3 @@ function User() {
 }
 
 export default User;
-
-
-
-// import * as React from 'react';
-// import Box from '@mui/material/Box';
-// import TextField from '@mui/material/TextField';
-
-// export default function FullWidthTextField() {
-//   return (
-//     <Box
-//       sx={{
-//         width: 500,
-//         maxWidth: '100%',
-//       }}
-//     >
-//       <TextField fullWidth label="fullWidth" id="fullWidth" />
-//     </Box>
-//   );
-// }

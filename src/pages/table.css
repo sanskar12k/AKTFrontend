@@ -20,3 +20,6 @@
         width: fit-content !important;
     }
 }
+.MuiDataGrid-row{
+    cursor: pointer !important;
+}

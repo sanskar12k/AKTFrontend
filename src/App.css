@@ -36,3 +36,6 @@
     transform: rotate(360deg);
   }
 }
+.date-picker{
+  width: 100%;
+}
