@@ -10,6 +10,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import { useAuth } from '../Context/Auth';
+import api from './api';
 function User() {
   const [value, setValue] = useState(
     dayjs(Date.now())
@@ -30,7 +31,6 @@ function User() {
     setRole(e.target.value);
   };
   async function checkRole(){
-    // let user = await getUser();
     if(curUser?.role === 'Staff'){
       console.log(curUser)
       navigate(`/profile/`+curUser?._id)
@@ -42,14 +42,8 @@ function User() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const user = await fetch('http://localhost:3000/user/create', {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "POST",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
+      const user = await api.post('/user/create', 
+        {
           fname: fname,
           lname: lname,
           username: username,
@@ -58,13 +52,19 @@ function User() {
           role: role,
           store: store,
           dob:value
-        }),
-      })
-      const userj = await user.json();
-      console.log(userj);
-      if (userj.message === "User created") {
+        },
+        {
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "POST",
+          Accept: "application/json",
+         },
+        }
+      )
+      console.log(user);
+      if (user.status === 201) {
         setTimeout(() => {
-          toast.success("User Added successfully", {
+          toast.success(user.data.message, {
             position: "top-center",
           });
         }, 100);
@@ -74,30 +74,23 @@ function User() {
         setPassword('')
         setRole('')
         setUsername('')
-      } else {
-        if (userj.message.message) {
-          console.log(userj.message.message)
-          toast.warn(userj.message.message, {
-            position: "top-center",
-          });
-        }
-        else {
-          console.log(userj.message)
-          toast.warn(userj.message, {
-            position: "top-center",
-          });
-        }
       }
+        else {
+          console.log(user)
+          toast.warn(user, {
+            position: "top-center",
+          });
+        }
     } catch (error) {
-      console.log(error)
-      toast.warn('Invalid Data', {
+      console.log(error);
+      toast.warn(error.response.data.error, {
         position: "top-center",
       });
     }
   }
   useEffect(()=>{
-    checkRole();
-    console.log(curUser)
+    // checkRole();
+    // console.log(curUser)
   },[])
   return (
     <>

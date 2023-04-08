@@ -21,25 +21,6 @@ function NavBar(props) {
     }
     const [login, setLogin] = useState(false)
     const [user, setUser] = useState();
-     const fetchSale = async () => {
-      try {
-          // console.log(localStorage.getItem('login'))
-        const res = await api.post('/user/userPro', {tkn:localStorage.getItem('login'), id:localStorage.getItem('id')});
-        console.log(res);
-        if(!res.data.user){
-          console.log("kjbn")
-          // return redirect('/login')
-        }
-        else{
-          setUser(res.data.user)
-          setLogin(true)
-        }
-      }
-      catch (e) { console.log(e) }
-    }
-    // useEffect(() => {
-    //   fetchSale();
-    // }, [])
     return (
         <>
             <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">

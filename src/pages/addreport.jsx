@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import NavBar from '../components/Nvbr';
 import { LinearProgress } from '@mui/material';
 import { useAuth } from '../Context/Auth';
-
+import api from './api';
 function User() {
   const [sale, setSale] = useState(0);
   const [customer, setCustomer] = useState(0);
@@ -36,29 +36,29 @@ function User() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const report = await fetch('http://localhost:3000/user/addSale', {
-        method: "POST",
+      const report = await api.post('/user/addSale', {
+        sale: sale,
+        customer: customer,
+        paytm: paytm,
+        hdfc: hdfc,
+        created: value,
+        added: curUser._id,
+        store: store,
+        addedName: curUser.fname + ' ' + curUser.lname
+      },
+      {
         headers: {
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin": "POST",
           'Authorization':document.cookie
         },
-        body: JSON.stringify({
-          sale: sale,
-          customer: customer,
-          paytm: paytm,
-          hdfc: hdfc,
-          created: value,
-          added: curUser._id,
-          store: store,
-          addedName: curUser.fname + ' ' + curUser.lname
-        }),
-      })
-      const userj = await report.json();
+        mode:'cors'
+     })
+      const userj = report;
       console.log(userj);
-      if (userj.message === "Reported") {
+      if (userj.status === 200) {
         setTimeout(() => {
-          toast.success("Report Added", {
+          toast.success(userj.data.message, {
             position: "top-center",
           });
         }, 100);
@@ -68,15 +68,15 @@ function User() {
         setHdfc(0);
         setStore(' ');
       } else {
-        if (userj.message.message) {
-          console.log(userj.message.message)
-          toast.warn(userj.message.message, {
+        if (userj.data.message) {
+          console.log(userj.data.message)
+          toast.warn(userj.data.message, {
             position: "top-center",
           });
         }
         else {
-          console.log(userj.message)
-          toast.warn(userj.message, {
+          console.log(userj.data.message)
+          toast.warn(userj.data.message, {
             position: "top-center",
           });
         }

@@ -29,18 +29,34 @@ function User() {
   const [mailVerify, setVerify] = useState(false)
   const [loading, setLoading] = useState(false);
   const [dob, setDob] = useState();
-  const {userId} = useParams();
+  const { userId } = useParams();
   const fetchUser = async () => {
     try {
       setLoading(true)
       console.log(userId)
-      const res = await api.post('/user/userPro', { header: document.cookie }, { withCredentials: true });
-      const profile = await api.get(`/user/profile/${userId}`, { header: document.cookie }, { withCredentials: true });
+      const res = await api.get('/user/userPro',
+        {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': document.cookie
+          }
+        },
+        { withCredentials: true }
+      );
+      const profile = await api.get(`/user/profile/${userId}`, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': document.cookie
+        }
+      }, 
+        { withCredentials: true });
       console.log(profile.data.profile)
       if (!res.data.user) {
         navigate('/login')
       }
-      else if(profile.status !== 200){
+      else if (profile.status !== 200) {
         navigate('/')
       }
       else {
@@ -62,7 +78,7 @@ function User() {
       }
       setLoading(false);
     }
-    catch (e) { 
+    catch (e) {
       console.log(e)
       navigate('/')
     }
@@ -75,7 +91,7 @@ function User() {
     console.log(user)
     try {
       console.log(profile)
-      const res = await Api.patch(`http://localhost:3000/user/${profile._id}/edit`, {
+      const res = await Api.patch(`/user/${profile._id}/edit`, {
         fname: fname,
         lname: lname,
         username: username,
@@ -91,7 +107,6 @@ function User() {
           }
         },)
       const userj = res.data;
-      // console.log(res.data);
       if (res.status === 200) {
         setTimeout(() => {
           toast.success(userj.msg, {

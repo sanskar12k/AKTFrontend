@@ -20,35 +20,37 @@ function Login() {
   const [loader, setLoader] = useState(false);
   const [user, setUser] = useState();
   const {signin, curUser} = useAuth();
-  const fetchUser = async () => {
-    try {
-      setLoader(true)
-      console.log(document.cookie)
-      const res = await api.post('/user/userPro', { header: document.cookie }, { withCredentials: true });
-      console.log(res);
-      if (res.data.user) {
-        setLoader(false)
-        navigate('/')
-      }
-      setLoader(false)
-    }
-    catch (e) {
-      console.log(e)
-      setLoader(false)
-      navigate('/login')
-    }
-  }
+  // const fetchUser = async () => {
+  //   try {
+  //     setLoader(true)
+  //     console.log(document.cookie)
+  //     const res = await api.post('/user/userPro', { header: document.cookie },{mode:'cors'}, { withCredentials: true });
+  //     console.log(res);
+  //     if (res.data.user) {
+  //       setLoader(false)
+  //       navigate('/')
+  //     }
+  //     setLoader(false)
+  //   }
+  //   catch (e) {
+  //     console.log(e)
+  //     setLoader(false)
+  //     navigate('/login')
+  //   }
+  // }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      setLoading(true)
       const res = await signin(username, password)
       console.log(res)
       if (res.status === 200) {
-        const userj = await res.json();
-        console.log(userj)
+        const userj = res;
+        console.log(userj);
+        setLoading(false);
         navigate('/');
-        window.location.reload();
+        // window.location.reload();
       }
       else if (res.status === 401 || res.status === 400) {
         toast.warn("Invalid Credentials", {
@@ -56,21 +58,22 @@ function Login() {
         });
       }
       else {
-        toast.warn("Form incomplete", {
+        console.log(res)
+        toast.warn(res.error, {
           position: "top-center",
         });
       }
-      setLoading(false)
     } catch (error) {
       console.log(error)
       toast.warn(error.message, {
         position: "top-center",
       });
     }
+    setLoading(false);
   }
   useEffect(() => {
     // fetchUser();
-    console.log(curUser);
+    console.log("curUser", curUser);
     if(curUser){
       navigate('/');
     }

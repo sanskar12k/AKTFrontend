@@ -1,4 +1,4 @@
-import React, { useContext, useState, createContext, useEffect} from 'react';
+import React, { useContext, useState, createContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from "react-toastify";
@@ -14,52 +14,58 @@ export function AuthProvider({ children }) {
     const [role, setRole] = useState();
     async function signin(username, password) {
         try {
-            const res = await fetch('http://localhost:3000/user/login', {
-                method: "POST",
-                credentials: 'include',
+            const res = await api.post('/user/login', {
+                username: username,
+                password: password
+              }, {
                 headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": "POST",
-                    Accept: "application/json",
+                  "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    username: username,
-                    password: password,
-                }),
-            })
+                withCredentials: true,
+                credentials:'include',
+              });
+            const token = res.data.token;
+            document.cookie = `token=`+token;
+            console.log(res.data.userEmail);
+            console.log(res);
+            setCurUser(res.data.userEmail)
             return res;
         } catch (error) {
             console.log(error)
-            toast.warn(error.message, {
-                position: "top-center",
-            });
+            // toast.warn(error.message, {
+            //     position: "top-center",
+            // });
         }
     }
 
-    async function getUser(){
+    async function getUser() {
+        setLoader(true);
         try {
-            setLoader(true)
             console.log(document.cookie)
-            const res = await api.post('/user/userPro', { header: document.cookie }, { withCredentials: true });
-            console.log(res);
-            if(res.data.user){
-            setCurUser(res.data.user);
-            setRole(res.data.user.role);
+            const res = await api.get('/user/userPro',
+            {
+                headers: {
+                    'Authorization': document.cookie,
+                'Content-Type': 'application/json'
+              }
+              ,
+               withCredentials: true
             }
+            );
+            console.log(res.data.user)
+            setCurUser(res.data.user);
             setLoader(false);
             return res.data.user
-          }
-          catch (e) {
-            console.log(e)
+        }
+        catch (e) {
+            console.log(e);
             navigate('/login')
-          }
+        }
+        setLoader(false);
     }
 
-    useEffect(()=>{
-       const res = async ()=>{ 
-        await getUser()
-       }
-       return res;
+    useEffect(() => {
+       getUser();
     }, [])
     const val = {
         curUser,
@@ -67,10 +73,29 @@ export function AuthProvider({ children }) {
         role,
         getUser
     }
-    
-    return(
+
+    return (
         <AuthContext.Provider value={val}>
-       {!loading && children}
+            {!loading && children}
         </AuthContext.Provider>
     )
 }
+
+
+
+
+            // const res = await fetch('https://akt-backend.onrender.com/user/login', {
+            //     withCredentials: true,
+            //     method: "POST",
+            //     credentials: 'include',
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //         "Access-Control-Allow-Origin": "POST",
+            //         Accept: "application/json",
+            //     },
+            //     mode:'cors',
+            //     body: JSON.stringify({
+            //         username: username,
+            //         password: password,
+            //     }),
+            // })
