@@ -14,7 +14,7 @@ export function AuthProvider({ children }) {
     const [role, setRole] = useState();
     async function signin(username, password) {
         try {
-            const res = await api.post('/user/login', {
+            const res = await api.post('/user/login/', {
                 username: username,
                 password: password
               }, {
@@ -42,7 +42,7 @@ export function AuthProvider({ children }) {
         setLoader(true);
         try {
             console.log(document.cookie)
-            const res = await api.get('/user/userPro',
+            const res = await api.get('/user/userPro/',
             {
                 headers: {
                     'Authorization': document.cookie,
