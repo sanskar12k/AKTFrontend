@@ -49,8 +49,9 @@ function User() {
       {
         headers: {
           "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "POST",
-          'Authorization':document.cookie
+          'Authorization':document.cookie,
+          "Accept": "application/json",
+          "Access-Control-Allow-Origin": "*",
         },
         mode:'cors'
      })

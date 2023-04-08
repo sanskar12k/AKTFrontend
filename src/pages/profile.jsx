@@ -101,7 +101,7 @@ function User() {
         {
           headers: {
             "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "POST",
+            "Access-Control-Allow-Origin": "*",
             Accept: "application/json",
             'Authorization': document.cookie
           }
