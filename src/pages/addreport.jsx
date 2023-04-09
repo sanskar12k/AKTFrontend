@@ -3,7 +3,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Button from '@mui/material/Button';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { ToastContainer, toast } from "react-toastify";
-import {Box, InputLabel, MenuItem, FormControl, Select} from '@mui/material'; 
+import {Box, InputLabel, MenuItem, FormControl, Select, LoadingButton} from '@mui/material'; 
 import dayjs, { Dayjs } from 'dayjs';
 import TextField from '@mui/material/TextField';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -35,6 +35,7 @@ function User() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const report = await api.post('/user/addSale', {
         sale: sale,
@@ -82,12 +83,14 @@ function User() {
           });
         }
       }
+      setLoading(false);
     } catch (error) {
       console.log(error)
       toast.warn('Error in data', {
         position: "top-center",
       });
     }
+    setLoading(false);
   }
   return (
     <>

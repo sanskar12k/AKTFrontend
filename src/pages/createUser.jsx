@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from "react-toastify";
-import {Button, TextField, InputLabel, MenuItem, FormControl, Select, Box, LinearProgress } from '@mui/material';
+import {LoadingButton, TextField, InputLabel, MenuItem, FormControl, Select, Box, LinearProgress } from '@mui/material';
 import './login.css'
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../components/Nvbr';
@@ -41,6 +41,7 @@ function User() {
   }
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const user = await api.post('/user/create', 
         {
@@ -81,12 +82,14 @@ function User() {
             position: "top-center",
           });
         }
+        setLoading(false);
     } catch (error) {
       console.log(error);
       toast.warn(error.response.data.error, {
         position: "top-center",
       });
     }
+    setLoading(false);
   }
   useEffect(()=>{
     // checkRole();
@@ -229,7 +232,7 @@ function User() {
                       }
                     }}
                   />
-                  <Button variant="contained" margin="normal" onClick={handleSubmit}>Add User</Button>
+                  <LoadingButton loading={loading} variant="contained" margin="normal" onClick={handleSubmit}>Add User</LoadingButton>
                 </div>
               </Box>
 

@@ -22,7 +22,6 @@ export function AuthProvider({ children }) {
                   "Content-Type": "application/json"
                 },
                 withCredentials: true,
-                credentials:'include',
               });
             const token = res.data.token;
             document.cookie = `token=`+token;
@@ -32,9 +31,6 @@ export function AuthProvider({ children }) {
             return res;
         } catch (error) {
             console.log(error)
-            // toast.warn(error.message, {
-            //     position: "top-center",
-            // });
         }
     }
 
