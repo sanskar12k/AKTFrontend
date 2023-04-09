@@ -26,6 +26,7 @@ function User() {
   const [login, setLogin] = useState(false)
   const [owner, setOwner] = useState(false)
   const [store, setStore] = useState('');
+  const [buttonLoading, setBLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const {curUser, getUser} = useAuth();
   const handleChange = (e) => {
@@ -42,7 +43,7 @@ function User() {
   }
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setBLoading(true);
     try {
       const user = await api.post('/user/create', 
         {
@@ -83,14 +84,14 @@ function User() {
             position: "top-center",
           });
         }
-        setLoading(false);
+        setBLoading(false);
     } catch (error) {
       console.log(error);
       toast.warn(error.response.data.error, {
         position: "top-center",
       });
     }
-    setLoading(false);
+    setBLoading(false);
   }
   useEffect(()=>{
     // checkRole();
@@ -233,7 +234,7 @@ function User() {
                       }
                     }}
                   />
-                  <LoadingButton loading={loading} variant="contained" margin="normal" onClick={handleSubmit}>Add User</LoadingButton>
+                  <LoadingButton loading={buttonLoading} variant="contained" margin="normal" onClick={handleSubmit}>Add User</LoadingButton>
                 </div>
               </Box>
 

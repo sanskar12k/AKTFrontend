@@ -24,6 +24,7 @@ function User() {
     dayjs(Date.now())
   );
   const [store, setStore] = useState('AKT Old');
+  const [buttonLoading, setBLoading] = useState(false)
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate();
   const {curUser} = useAuth();
@@ -35,7 +36,7 @@ function User() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setBLoading(true);
     try {
       const report = await api.post('/user/addSale', {
         sale: sale,
@@ -83,14 +84,14 @@ function User() {
           });
         }
       }
-      setLoading(false);
+      setBLoading(false);
     } catch (error) {
       console.log(error)
       toast.warn('Error in data', {
         position: "top-center",
       });
     }
-    setLoading(false);
+    setBLoading(false);
   }
   return (
     <>
@@ -200,7 +201,7 @@ function User() {
               value={hdfc}
               onChange={e => setHdfc(e.target.value)}
             />
-            <LoadingButton loading={loading} variant="contained"  onClick={handleSubmit}>Submit</LoadingButton>
+            <LoadingButton loading={buttonLoading} variant="contained"  onClick={handleSubmit}>Submit</LoadingButton>
           </div>
         </Box>
     
