@@ -25,8 +25,8 @@ export function AuthProvider({ children }) {
               });
             const token = res.data.token;
             document.cookie = `token=`+token;
-            console.log(res.data.userEmail);
-            console.log(res);
+            // console.log(res.data.userEmail);
+            // console.log(res);
             setCurUser(res.data.userEmail)
             return res;
         } catch (error) {
@@ -37,7 +37,7 @@ export function AuthProvider({ children }) {
     async function getUser() {
         setLoader(true);
         try {
-            console.log(document.cookie)
+            // console.log(document.cookie)
             const res = await api.get('/user/userPro/',
             {
                 headers: {
@@ -48,7 +48,10 @@ export function AuthProvider({ children }) {
                withCredentials: true
             }
             );
-            console.log(res.data.user)
+            if(res.status === 403){
+                navigate('/login');
+            }
+            // console.log(res.data.user)
             setCurUser(res.data.user);
             setLoader(false);
             return res.data.user

@@ -12,8 +12,22 @@ import './login.css'
 import api from './api'
 import { useNavigate, useParams } from 'react-router-dom';
 import NavBar from '../components/Nvbr';
-import { Grid, LinearProgress } from '@mui/material';
+import { Grid, LinearProgress, Modal, Typography } from '@mui/material';
 import Api from './api';
+import OtpInput from 'react-otp-input';
+import { useAuth } from '../Context/Auth';
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 450,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 2,
+};
+
 function User() {
   const [profile, setProfile] = useState('');
   const [fname, setFname] = useState('');
@@ -26,14 +40,27 @@ function User() {
   const [login, setLogin] = useState(false)
   const [owner, setOwner] = useState(false)
   const [user, setUser] = useState();
-  const [mailVerify, setVerify] = useState(false)
+  const [phVerify, setVerify] = useState(false)
   const [loading, setLoading] = useState(false);
   const [dob, setDob] = useState();
   const { userId } = useParams();
+  const [open, setOpen] = useState(false);
+  const [openCP, setOpenCP] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const [otp, setOtp] = useState('');
+  const handleOpenCP = () => setOpenCP(true);
+  const handleCloseCP = () => setOpenCP(false);
+  const [otpV, setOtpV] = useState(0)
+  const [newPw, setNewPw] = useState('');
+  function handleOtpChange(value) {
+    setOtp(value);
+  }
+  const { getUser } = useAuth();
   const fetchUser = async () => {
     try {
       setLoading(true)
-      console.log(userId)
+      // console.log(userId)
       const res = await api.get('/user/userPro',
         {
           headers: {
@@ -50,9 +77,9 @@ function User() {
           'Content-Type': 'application/json',
           'Authorization': document.cookie
         }
-      }, 
+      },
         { withCredentials: true });
-      console.log(profile.data.profile)
+      // console.log(profile.data.profile)
       if (!res.data.user) {
         navigate('/login')
       }
@@ -60,7 +87,7 @@ function User() {
         navigate('/')
       }
       else {
-        console.log(res.data.user)
+        // console.log(res.data.user)
         setUser(res.data.user)
         setLogin(true);
         setProfile(profile.data.profile);
@@ -88,9 +115,9 @@ function User() {
   }, [])
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(user)
+    // console.log(user)
     try {
-      console.log(profile)
+      // console.log(profile)
       const res = await Api.patch(`/user/${profile._id}/edit`, {
         fname: fname,
         lname: lname,
@@ -115,13 +142,13 @@ function User() {
         }, 100);
       } else {
         if (userj.msg) {
-          console.log(userj.msg)
+          // console.log(userj.msg)
           toast.warn(userj.msg, {
             position: "top-center",
           });
         }
         else {
-          console.log(userj.msg)
+          // console.log(userj.msg)
           toast.warn(userj.msg, {
             position: "top-center",
           });
@@ -134,12 +161,217 @@ function User() {
       });
     }
   }
+  const updatePasswordOtp = async (e) => {
+    e.preventDefault();
+    try {
+
+      const res = await Api.get('/user/sendOtp', {
+        headers: {
+          'Authorization': document.cookie,
+          'Content-Type': 'application/json'
+        },
+      });
+      handleOpen();
+      toast.success(res.data.message, {
+        position: "top-center"
+      })
+      console.log(res);
+
+    }
+    catch (error) {
+      console.log(error);
+    }
+  }
+  const otpForVerification = async (e) => {
+    e.preventDefault();
+    try {
+      setOtpV(1);
+      const res = await Api.get('/user/sendOtpForNumVerify', {
+        headers: {
+          'Authorization': document.cookie,
+          'Content-Type': 'application/json'
+        },
+      });
+      handleOpen();
+      toast.success(res.data.message, {
+        position: "top-center"
+      })
+      console.log(res);
+
+    }
+    catch (error) {
+      console.log(error);
+    }
+  }
+  const checkOTP = async (e) => {
+    e.preventDefault();
+    try {
+      // const pwUser = await getUser();
+      const res = await api.get('/user/userPro/',
+        {
+          headers: {
+            'Authorization': document.cookie,
+            'Content-Type': 'application/json'
+          }
+          ,
+             withCredentials: true
+        }
+      );
+      const pwUser = res.data.user;
+      console.log(otp)
+      console.log(pwUser.pwChange)
+      if (pwUser.pwChange === otp) {
+        console.log("Matched")
+        handleClose();
+        handleOpenCP();
+      }
+      else {
+        toast.warn("OTP Verification failed", {
+          position: "top-center",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  const numberVerify = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await Api.patch('/user/verifyPhone', {
+        otp: otp
+      },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            Accept: "application/json",
+            'Authorization': document.cookie
+          }
+        })
+      if (res.status === 200) {
+        setTimeout(() => {
+          toast.success(res.data.message, {
+            position: "top-center",
+          });
+        }, 100);
+        window.location.reload();
+      }
+     else{ setTimeout(() => {
+        toast.warn(res.data.message, {
+          position: "top-center",
+        });
+      }, 100);
+    }
+      handleClose();
+      setOtp('');
+    } catch (error) {
+      setTimeout(() => {
+        toast.warn(error.response.data.message, {
+          position: "top-center",
+        });
+      }, 100);
+      console.log(error.response.data.message)
+    }
+  }
+  const changePassword = async (e) => {
+    e.preventDefault();
+    if (!newPw) {
+      toast.warn("Please enter a valid password", {
+        position: 'top-center'
+      })
+      return;
+    }
+    try {
+      const res = await Api.patch(`/user/changePassword`, {
+        password: newPw,
+        otp: otp,
+      },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            Accept: "application/json",
+            'Authorization': document.cookie
+          }
+        })
+      // console.log(res)
+      if (res.status === 200) {
+        setTimeout(() => {
+          toast.success(res.data.message, {
+            position: "top-center",
+          });
+        }, 100);
+      }
+      handleCloseCP();
+      setNewPw('');
+      setOtp('');
+    } catch (error) {
+
+    }
+  }
   return (
     <>
       {loading && <LinearProgress />}
       {!loading && login &&
         <>
           <NavBar user={user} />
+          <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={style}>
+              <Typography id="modal-modal-title" variant="h6" component="h2" className='text-center'>
+               {otpV === 0 ? 'Update Password' :'Phone Number Verification'}
+              </Typography>
+              <Typography id="modal-modal-description" variant='p' component="p" className='text-muted text-center' sx={{ mt: 1 }}>
+                Enter your 4-digit OTP sent to your registered number
+              </Typography>
+              <div className="otp-container">
+                <div className="otp-box">
+                  <OtpInput
+                    value={otp}
+                    onChange={setOtp}
+                    numInputs={4}
+                    className="otp-box"
+                    renderInput={(props) => <input {...props} />}
+                  />
+                </div>
+                <Button variant="contained" margin="normal" className='mt-2 ' onClick={otpV === 0 ? checkOTP : numberVerify }>Submit</Button>
+
+              </div>
+            </Box>
+          </Modal>
+          <Modal
+            open={openCP}
+            onClose={handleCloseCP}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={style}>
+              <Typography id="modal-modal-title" variant="h6" component="h2" className=''>
+                New Password
+              </Typography>
+              <Typography id="modal-modal-description" variant='p' component="p" className=' ' sx={{ mt: 2 }}>
+                Enter your new password
+              </Typography>
+              <div className="otp-containers">
+                <TextField
+                  required
+                  id="outlined-password-input"
+                  fullWidth
+                  margin="normal"
+                  label="Password"
+                  type="password"
+                  value={newPw}
+                  onChange={e => setNewPw(e.target.value)}
+                />
+                <Button variant="contained" margin="normal" className='mt-2 ' onClick={changePassword}>Change Password</Button>
+
+              </div>
+            </Box>
+          </Modal>
           <div className="shadow  container p-4">
             <h1 style={{
               mr: 2,
@@ -157,9 +389,6 @@ function User() {
               <Grid item xs={12} md={7}>
                 <Box
                   component="form"
-                  // sx={{
-                  //   '& .MuiTextField-root': { m: 1, width: '25ch' },
-                  // }}
                   sx={{
                     maxWidth: '100%',
                   }}
@@ -168,7 +397,6 @@ function User() {
                   onSubmit={handleSubmit}
                 >
                   <div>
-
                     <TextField
                       required
                       id="outlined-required"
@@ -176,7 +404,6 @@ function User() {
                       fullWidth
                       margin="normal"
                       value={fname}
-                      // disabled={disable}
                       onChange={e => setFname(e.target.value)}
                     />
                     <TextField
@@ -185,7 +412,6 @@ function User() {
                       id="outlined-required"
                       label="Last Name"
                       value={lname}
-                      // disabled={disable}
                       onChange={e => setLname(e.target.value)}
                     />
                     <TextField
@@ -200,11 +426,12 @@ function User() {
                     />
                     <TextField
                       fullWidth
-                      error={!mailVerify}
+                      error={!phVerify}
                       margin="normal"
                       id="outlined-number"
                       label="Contact No."
-                      helperText={mailVerify ? 'Verified' : 'Not Verified'}
+                      helperText={phVerify ? '' : 'Not Verified '}
+                      className={phVerify ? 'mb-0' : ''}
                       value={number}
                       onChange={e => {
                         const regex = /^[0-9\b]+$/;
@@ -215,6 +442,7 @@ function User() {
                       }
 
                     />
+                    {!phVerify ? <Button className='verify-btn' onClick={otpForVerification}>Verify Now</Button> : ''}
                     <TextField
                       fullWidth
                       margin="normal"
@@ -245,13 +473,15 @@ function User() {
                       </Select>
                     </FormControl>}
                     {/* {!mailVerify && <div className='mb-2'> <Button variant="outlined"  color='success' margin="normal" onClick={handleSubmit}>Verify Phone Number</Button> </div> } */}
-                    {(profile._id === user._id || user.role === 'Manager' || user.role === 'Owner') && <Button variant="contained" margin="normal" className='mt-2' onClick={handleSubmit}>Update Profile</Button>}
+                    {(profile._id === user._id || user.role === 'Manager' || user.role === 'Owner') && <div>
+                      <Button variant="contained" margin="normal" className='mt-2 me-2' onClick={handleSubmit}>Update Profile</Button>
+                      <Button variant="contained" margin="normal" className='mt-2 ms-2' onClick={updatePasswordOtp}>Change Password</Button>
+
+                    </div>}
                   </div>
                 </Box>
               </Grid>
             </Grid>
-
-
             <ToastContainer />
           </div>
         </>}

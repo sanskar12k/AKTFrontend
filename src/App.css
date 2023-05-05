@@ -39,3 +39,41 @@
 .date-picker{
   width: 100%;
 }
+/* .OtpInput {
+  display: flex;
+  justify-content: center;
+}
+
+.OtpInput input {
+  font-size: 2rem;
+  width: 3rem;
+  height: 3rem;
+  margin: 0 0.5rem;
+  text-align: center;
+  border: none;
+  border-bottom: 2px solid #ccc;
+  outline: none;
+}
+
+.OtpInput input:focus {
+  border-color: #007bff;
+} */
+
+.otp-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-direction: column;
+  margin-top: 1rem;
+}
+.otp-box input{
+  border: 1px solid black !important;
+  margin: 0 10px;
+  width: 2.5rem !important;
+  height: 2.6rem !important;
+}
+
+.verify-btn{
+  float: right !important;
+}
