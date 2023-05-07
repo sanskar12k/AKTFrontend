@@ -25,7 +25,7 @@ function Dashboard(){
     }
     useEffect(()=>{
       checkRole();
-      console.log(curUser, "Cur") 
+      // console.log(curUser, "Cur") 
     },[])
     return(
         <>

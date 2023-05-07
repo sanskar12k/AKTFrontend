@@ -175,7 +175,7 @@ function User() {
       toast.success(res.data.message, {
         position: "top-center"
       })
-      console.log(res);
+      // console.log(res);
 
     }
     catch (error) {
@@ -196,7 +196,7 @@ function User() {
       toast.success(res.data.message, {
         position: "top-center"
       })
-      console.log(res);
+      // console.log(res);
 
     }
     catch (error) {
@@ -218,8 +218,8 @@ function User() {
         }
       );
       const pwUser = res.data.user;
-      console.log(otp)
-      console.log(pwUser.pwChange)
+      // console.log(otp)
+      // console.log(pwUser.pwChange)
       if (pwUser.pwChange === otp) {
         console.log("Matched")
         handleClose();

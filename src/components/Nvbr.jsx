@@ -44,11 +44,11 @@ export default function HideAppBar(props: Props) {
   const navigate = useNavigate();
   const logout = async () => {
     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    // const res = await api.post("/user/logout", {}, { withCredentials: true });
-    const res = await api.post("/user/logout", {});
-    console.log(res)
+    const res = await api.post("/user/logout", {}, { withCredentials: true });
+    // const res = await api.post("/user/logout", {});
+    // console.log(res)
     if (res.status === 200) {
-      console.log(res)
+      // console.log(res)
       navigate("/login")
       window.location.reload();
     }

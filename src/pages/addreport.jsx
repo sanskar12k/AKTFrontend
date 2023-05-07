@@ -58,7 +58,7 @@ function User() {
         mode:'cors'
      })
       const userj = report;
-      console.log(userj);
+      // console.log(userj);
       if (userj.status === 200) {
         setTimeout(() => {
           toast.success(userj.data.message, {
@@ -72,13 +72,13 @@ function User() {
         setStore(' ');
       } else {
         if (userj.data.message) {
-          console.log(userj.data.message)
+          // console.log(userj.data.message)
           toast.warn(userj.data.message, {
             position: "top-center",
           });
         }
         else {
-          console.log(userj.data.message)
+          // console.log(userj.data.message)
           toast.warn(userj.data.message, {
             position: "top-center",
           });

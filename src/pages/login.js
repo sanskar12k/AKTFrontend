@@ -20,34 +20,17 @@ function Login() {
   const [loader, setLoader] = useState(false);
   const [user, setUser] = useState();
   const {signin, curUser} = useAuth();
-  // const fetchUser = async () => {
-  //   try {
-  //     setLoader(true)
-  //     console.log(document.cookie)
-  //     const res = await api.post('/user/userPro', { header: document.cookie },{mode:'cors'}, { withCredentials: true });
-  //     console.log(res);
-  //     if (res.data.user) {
-  //       setLoader(false)
-  //       navigate('/')
-  //     }
-  //     setLoader(false)
-  //   }
-  //   catch (e) {
-  //     console.log(e)
-  //     setLoader(false)
-  //     navigate('/login')
-  //   }
-  // }
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       const res = await signin(username, password)
-      console.log(res)
+      // console.log(res)
       if (res.status === 200) {
         const userj = res;
-        console.log(userj);
+        // console.log(userj);
         setLoading(false);
         navigate('/');
         // window.location.reload();
@@ -58,7 +41,7 @@ function Login() {
         });
       }
       else {
-        console.log(res)
+        // console.log(res)
         toast.warn(res.error, {
           position: "top-center",
         });
@@ -73,7 +56,7 @@ function Login() {
   }
   useEffect(() => {
     // fetchUser();
-    console.log("curUser", curUser);
+    // console.log("curUser", curUser);
     if(curUser){
       navigate('/');
     }

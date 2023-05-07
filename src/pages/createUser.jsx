@@ -34,7 +34,7 @@ function User() {
   };
   async function checkRole(){
     if(curUser?.role === 'Staff'){
-      console.log(curUser)
+      // console.log(curUser)
       navigate(`/profile/`+curUser?._id)
     }
     else if(curUser?.role == 'CompOper'){
@@ -64,7 +64,7 @@ function User() {
          },
         }
       )
-      console.log(user);
+      // console.log(user);
       if (user.status === 201) {
         setTimeout(() => {
           toast.success(user.data.message, {
@@ -79,7 +79,7 @@ function User() {
         setUsername('')
       }
         else {
-          console.log(user)
+          // console.log(user)
           toast.warn(user, {
             position: "top-center",
           });

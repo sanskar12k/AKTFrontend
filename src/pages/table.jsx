@@ -102,7 +102,7 @@ export default function DataGridDemo(props) {
     event,   // MuiEvent<React.MouseEvent<HTMLElement>>
     details, // GridCallbackDetails
   ) => {
-    console.log(params, event, details)
+    // console.log(params, event, details)
   }
   const fetchSale = async () => {
     try {
@@ -146,7 +146,7 @@ export default function DataGridDemo(props) {
               return { ...e }
             })
           )
-          console.log(saleO)
+          // console.log(saleO)
           setX([...x]);
           setY([...y]);
           setXN([...xn]);

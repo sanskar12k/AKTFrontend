@@ -73,7 +73,7 @@ function User() {
   async function checkRole(){
     // let user = await getUser();
     if(curUser?.role === 'Staff'){
-      console.log(curUser)
+      // console.log(curUser)
       navigate(`/profile/`+curUser?._id)
     }
     else if(curUser?.role == 'CompOper'){
@@ -90,7 +90,7 @@ function User() {
           'Authorization': document.cookie
         },
       });
-    console.log(users);
+    // console.log(users);
     if (users.status === 200) {
       setUsers(users.data.users.map(e => {
         if (e.fname) e.fname = `${e.fname} ${e.lname}`
@@ -114,7 +114,7 @@ function User() {
             header: document.cookie
           }
         });
-      console.log(res);
+      // console.log(res);
       if (res.status === 200) {
         if (res.data.res) {
           toast.success("User Deleted successfully", {

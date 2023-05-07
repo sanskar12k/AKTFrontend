@@ -30,7 +30,8 @@ export function AuthProvider({ children }) {
             setCurUser(res.data.userEmail)
             return res;
         } catch (error) {
-            console.log(error)
+            console.log(error.response.data.err);
+            return error.response;
         }
     }
 
