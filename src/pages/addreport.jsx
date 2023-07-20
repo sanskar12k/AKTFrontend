@@ -53,7 +53,7 @@ function User() {
           "Content-Type": "application/json",
           'Authorization':document.cookie,
           "Accept": "application/json",
-          "Access-Control-Allow-Origin": "*",
+          // "Access-Control-Allow-Origin": "*",
         },
         mode:'cors'
      })

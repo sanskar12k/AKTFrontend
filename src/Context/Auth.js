@@ -41,12 +41,12 @@ export function AuthProvider({ children }) {
             // console.log(document.cookie)
             const res = await api.get('/user/userPro/',
             {
-                headers: {
-                    'Authorization': document.cookie,
+                withCredentials: true
+              ,  headers: {
+                'Authorization': document.cookie,
                 'Content-Type': 'application/json'
               }
-              ,
-               withCredentials: true
+              
             }
             );
             if(res.status === 403){
@@ -83,19 +83,3 @@ export function AuthProvider({ children }) {
 
 
 
-
-            // const res = await fetch('https://akt-backend.onrender.com/user/login', {
-            //     withCredentials: true,
-            //     method: "POST",
-            //     credentials: 'include',
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //         "Access-Control-Allow-Origin": "POST",
-            //         Accept: "application/json",
-            //     },
-            //     mode:'cors',
-            //     body: JSON.stringify({
-            //         username: username,
-            //         password: password,
-            //     }),
-            // })

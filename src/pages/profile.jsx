@@ -128,7 +128,7 @@ function User() {
         {
           headers: {
             "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
+            // "Access-Control-Allow-Origin": "*",
             Accept: "application/json",
             'Authorization': document.cookie
           }
@@ -175,7 +175,7 @@ function User() {
       toast.success(res.data.message, {
         position: "top-center"
       })
-      // console.log(res);
+      console.log(res);
 
     }
     catch (error) {
@@ -243,7 +243,7 @@ function User() {
         {
           headers: {
             "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
+            // "Access-Control-Allow-Origin": "*",
             Accept: "application/json",
             'Authorization': document.cookie
           }
@@ -289,7 +289,7 @@ function User() {
         {
           headers: {
             "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
+            // "Access-Control-Allow-Origin": "*",
             Accept: "application/json",
             'Authorization': document.cookie
           }
