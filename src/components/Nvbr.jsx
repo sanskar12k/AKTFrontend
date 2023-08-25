@@ -62,7 +62,9 @@ export default function HideAppBar(props: Props) {
           <Container maxWidth="xl">
             <Toolbar disableGutters>
               {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
-              <img src = {logo} height={70}/>
+              <div className='logo-nav-big'>
+              <img src = {logo} className='logo-nav-big'height={70}/>
+              </div>
               <Typography
                 variant="h6"
                 noWrap
@@ -124,7 +126,10 @@ export default function HideAppBar(props: Props) {
                   </MenuItem>}
                 </Menu>
               </Box>
-              <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+              {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} /> */}
+              <div className='logo-nav-small'>
+              <img src = {logo} className='logo-nav-small'height={70}/>
+              </div>
               <Typography
                 variant="h5"
                 noWrap
@@ -141,7 +146,7 @@ export default function HideAppBar(props: Props) {
                   textDecoration: 'none',
                 }}
               >
-                LOGO
+                {/* LOGO */}
               </Typography>
               <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                 {/* {pages.map((page) => ( */}

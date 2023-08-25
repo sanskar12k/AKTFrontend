@@ -58,9 +58,23 @@
 .verify-btn{
   float: right !important;
 }
-.css-5poeop{
+.css-5poeop , .css-11b3ww9-MuiPaper-root-MuiAppBar-root {
   background-color: #6340a0 !important;
 }
 .MuiButton-contained{
   background-color: #6340a0 !important;
+}
+
+
+/*logo css*/
+@media only screen and (min-width: 900px)  {
+  .logo-nav-small{
+    display: none !important;
+  }
+}
+
+@media only screen and (max-width: 900px)  {
+  .logo-nav-big{
+    display: none !important;
+  }
 }
