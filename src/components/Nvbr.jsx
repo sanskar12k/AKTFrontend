@@ -7,7 +7,7 @@ import {
   Link, useNavigate
 } from "react-router-dom";
 import api from '../pages/api';
-
+import logo from '../Images/akt.png';
 function HideOnScroll(props) {
   const { children, window } = props;
   const trigger = useScrollTrigger({
@@ -61,7 +61,8 @@ export default function HideAppBar(props: Props) {
         <AppBar>
           <Container maxWidth="xl">
             <Toolbar disableGutters>
-              <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+              {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
+              <img src = {logo} height={70}/>
               <Typography
                 variant="h6"
                 noWrap
@@ -70,14 +71,14 @@ export default function HideAppBar(props: Props) {
                 sx={{
                   mr: 2,
                   display: { xs: 'none', md: 'flex' },
-                  fontFamily: 'monospace',
+                  // fontFamily: 'monospace',
                   fontWeight: 700,
                   letterSpacing: '.3rem',
                   color: 'inherit',
                   textDecoration: 'none',
                 }}
               >
-                LOGO
+                {/* AK Traders */}
               </Typography>
 
               <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>

@@ -182,7 +182,6 @@ function User() {
                 columns={columns}
                 onRowClick={(params, event) => {
                   if (!event.ignore) {
-                    // console.log(params.id);
                     navigate(`/profile/${params.id}`)
                   }
                 }}

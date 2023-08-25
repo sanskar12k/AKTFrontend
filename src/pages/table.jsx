@@ -107,7 +107,8 @@ export default function DataGridDemo(props) {
   const fetchSale = async () => {
     try {
       setLoad(true)
-      const res = await api.get(`/user/sale`,
+      console.log(days, "days");
+      const res = await api.get(`/user/sale/${days}`,
         {
           headers: {
             'Accept': 'application/json',
@@ -116,9 +117,7 @@ export default function DataGridDemo(props) {
           },
         }, { withCredentials: true });
       if (res.status === 200) {
-        // console.log('sdk')
-        const data = await res.data;
-        // console.log(data.report)
+        const data = res.data;
         let y = [];
         let x = [];
         if (data.reportOld?.length > 0 || data.reportNew?.length > 0) {
@@ -140,18 +139,15 @@ export default function DataGridDemo(props) {
             data.reportNew.map(e => {
               if (e.created) { e.created = new Date(e.created).toLocaleDateString('en-GB'); }
               if (e.added) e.username = `${e.added.fname} ${e.added.lname}`
-
               xn.push(e.created);
               yn.push(e.sale);
               return { ...e }
             })
           )
-          // console.log(saleO)
           setX([...x]);
           setY([...y]);
           setXN([...xn]);
           setYN([...yn]);
-          // console.log(sale)
         }
       }
       setLoad(false)
@@ -168,18 +164,17 @@ export default function DataGridDemo(props) {
       store:store,
       paytm:paytm,
       hdfc:hdfc,
-      created: value
     },
       {
         headers: {
           "Content-Type": "application/json",
-          // "Access-Control-Allow-Origin": "*",
-          Accept: "application/json",
+           Accept: "application/json",
           'Authorization': document.cookie
         }
       },
       )
-      console.log(res)
+      console.log(res);
+      handleClose();
       setLoad(false);
     } catch (error) {
       
@@ -249,19 +244,7 @@ export default function DataGridDemo(props) {
             <Typography id="modal-modal-title" variant="h4" align='center' component="p">
             Report
             </Typography>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-              fullWidth
-                label="Date"
-                margin="normal"
-                inputFormat="MM/DD/YYYY"
-                value={value}
-                onChange={(newValue) => {
-                  setValue(newValue);
-                }}
-                renderInput={(params) => <TextField {...params} />}
-              />
-            </LocalizationProvider>
+           
             <FormControl fullWidth margin="normal">
               <InputLabel id="demo-simple-select-helper-label">Store</InputLabel>
               <Select
@@ -300,7 +283,6 @@ export default function DataGridDemo(props) {
               type="number"
               onChange={e => setCustomer(e.target.value)}
             />
-
             <TextField
               required
               fullWidth
@@ -324,7 +306,7 @@ export default function DataGridDemo(props) {
               onChange={e => setHdfc(e.target.value)}
             />
             <Typography id="modal-modal-description" sx={{ mt: 2 }} align='center' >
-              <Button align='center' variant='contained' color='success' onClick={() => {updateSale(id); console.log("updated") }}>Save</Button>
+              <Button align='center' variant='contained' color='success' onClick={(e) => {e.preventDefault(); updateSale(id); console.log("updated") }}>Save</Button>
             </Typography>
           </Box>
         </Modal>
@@ -393,23 +375,22 @@ export default function DataGridDemo(props) {
               getRowId={(row) => row._id}
               rows={saleO}
               columns={columns}
-              // onCellClick={(params, event) => {
-              //   console.log(params.row)
-              //   setReport(params.row)
-              //   setSales(params.row.sale);
-              //   setHdfc(params.row.hdfc);
-              //   setPaytm(params.row.paytm);
-              //   setValue(params.row.created);
-              //   setId(params.row._id);
-              //   setCustomer(params.row.customer)
-              //   setStore(params.row.store);
-              //   handleOpen();
-              // }}
               pageSize={10}
               rowsPerPageOptions={[10]}
               loading={tableLoad}
+              onRowClick={(params, event) => {
+                  if (!event.ignore) {
+                    console.log(params);
+                    setId(params.id);
+                    setSales(params.row.sale);
+                    setCustomer(params.row.customer)
+                    setPaytm(params.row.paytm);
+                    setHdfc(params.row.hdfc);
+                    handleOpen();
+                  }
+                }}
               experimentalFeatures={{ newEditingApi: true }}
-              components={{ Toolbar: GridToolbarExport }}
+              // components={{ Toolbar: GridToolbarExport }}
             />
           </Box>
         </>
@@ -424,8 +405,14 @@ export default function DataGridDemo(props) {
               pageSize={10}
               rowsPerPageOptions={[10]}
               loading={tableLoad}
+              onRowClick={(params, event) => {
+                  if (!event.ignore) {
+                    console.log(params.id);
+                    handleOpen();
+                  }
+                }}
               experimentalFeatures={{ newEditingApi: true }}
-              components={{ Toolbar: GridToolbarExport }}
+              // components={{ Toolbar: GridToolbarExport }}
             />
           </Box>
         </>}
