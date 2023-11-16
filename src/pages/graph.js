@@ -1,10 +1,8 @@
 import { Line, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
-  LineElement,
   CategoryScale,
   LinearScale,
-  PointElement,
   Tooltip,
   Title,
   BarElement,
@@ -12,7 +10,7 @@ import {
 } from "chart.js";
 import './graph.css'
 // defaults.global.maintainAspectRatio = false
-ChartJS.register(BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
+ChartJS.register(BarElement,  LinearScale, CategoryScale, Title, Tooltip);
 
 const Graph = ({ydata, xdata, param}) => {
     // console.log(ydata)
@@ -22,9 +20,6 @@ const Graph = ({ydata, xdata, param}) => {
       {
         data: [...ydata],
         label:param,
-        // backgroundColor: "transparent",
-        // borderColor: "#f26c6d",
-        // pointBorderColor: "transparent",
         backgroundColor: 'rgba(255, 99, 132, 1)',
         pointBorderWidth: 8,
         tension: 0.1,
@@ -42,23 +37,21 @@ const Graph = ({ydata, xdata, param}) => {
         grid: {
           display: false,
         },
+        display:false
       },
       y: {
-        ticks: {
-          stepSize: 8,
-        //   callback: (value) =>  + value,
-        },
+        // ticks: {
+        //   stepSize: 20,
+        // },
         grid: {
-          borderDash: [10],
+          borderDash: [15],
         },
       },
     },
   };
   return (
     <div className="graph" >
-      {/* // <div> */}
       <Bar data={data} options={options}></Bar>
-      
     </div>
   );
 };

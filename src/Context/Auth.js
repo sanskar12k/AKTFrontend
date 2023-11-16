@@ -24,9 +24,8 @@ export function AuthProvider({ children }) {
                 withCredentials: true,
               });
             const token = res.data.token;
-            document.cookie = `token=`+token;
-            // console.log(res.data.userEmail);
-            // console.log(res);
+            document.cookie = `token=${token}; path=/;`;
+            console.log(document.cookie);
             setCurUser(res.data.userEmail)
             return res;
         } catch (error) {

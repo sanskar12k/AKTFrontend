@@ -27,13 +27,10 @@ function Login() {
     setLoading(true);
     try {
       const res = await signin(username, password)
-      // console.log(res)
       if (res.status === 200) {
         const userj = res;
-        // console.log(userj);
         setLoading(false);
         navigate('/');
-        // window.location.reload();
       }
       else if (res.status === 401 || res.status === 400) {
         toast.warn("Invalid Credentials", {
@@ -41,7 +38,6 @@ function Login() {
         });
       }
       else {
-        // console.log(res)
         toast.warn(res.error, {
           position: "top-center",
         });
@@ -55,8 +51,6 @@ function Login() {
     setLoading(false);
   }
   useEffect(() => {
-    // fetchUser();
-    // console.log("curUser", curUser);
     if(curUser){
       navigate('/');
     }

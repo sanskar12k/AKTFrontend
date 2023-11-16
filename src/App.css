@@ -65,6 +65,12 @@
   background-color: #6340a0 !important;
 }
 
+.param-button{
+  background-color: #6340a0d3 !important;
+  border: 2px solid #6340a0 !important;
+  color: white !important;
+  /* font-size: xx-large !important; */
+}
 
 /*logo css*/
 @media only screen and (min-width: 900px)  {

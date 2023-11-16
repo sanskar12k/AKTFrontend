@@ -6,41 +6,40 @@ import '@devexpress/dx-react-chart-bootstrap4/dist/dx-react-chart-bootstrap4.css
 import Graph from './graph';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select from '@mui/material/Select';
 import Skelton from '../skeleton/dashboard';
 import './table.css'
-import { Button, InputLabel, Modal, TextField, Typography } from '@mui/material';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { Button, Fab, InputLabel, Modal, TextField, Typography } from '@mui/material';
 import dayjs from 'dayjs';
 import Api from './api';
+import Summary from './summary';
 const columns: GridColDef[] = [
   {
     field: 'created',
     headerName: 'Date',
-    width: 180
+    width: 200
   },
-  {
-    field: 'store',
-    headerName: 'Store',
-    sortable: false,
-    width: 180,
-  },
+  // {
+  //   field: 'store',
+  //   headerName: 'Store',
+  //   sortable: false,
+  //   width: 180,
+  // },
   {
     field: 'sale',
     headerName: 'Sale',
-    width: 180,
+    width: 200,
   },
   {
     field: 'customer',
     headerName: 'Customer',
-    width: 150,
+    width: 170,
   },
   {
     field: 'paytm',
     headerName: 'Paytm',
     // type: 'number',
-    width: 160,
+    width: 180,
   },
   {
     field: 'hdfc',
@@ -50,7 +49,7 @@ const columns: GridColDef[] = [
   {
     field: 'addedName',
     headerName: 'Added by',
-    width: 180
+    width: 200
   }
 ];
 
@@ -61,7 +60,7 @@ function CustomToolbar() {
 }
 
 const style = {
-  position: 'absolute' ,
+  position: 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
@@ -79,9 +78,10 @@ export default function DataGridDemo(props) {
   const [xDataN, setXN] = useState([]);
   const [yDataN, setYN] = useState([]);
   const [param, setParam] = useState('sale');
-  const [days, setDays] = useState(30);
+  const [days, setDays] = useState(1);
   const [tableLoad, setLoad] = useState(false);
-  const [store, setStore] = useState('AKT Old');
+  const [store, setStore] = useState('AKT New');
+  const [storeUp, setStoreUp] = useState('AKT Old');//
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -94,25 +94,34 @@ export default function DataGridDemo(props) {
     dayjs(Date.now())
   );
   const [id, setId] = useState();
+  const [summary, setSummary] = useState([]);
+  const [prevSum, setprevSum] = useState([
+    { 'count': 1, 'totalCustomers': 0, 'totalOnlinePayment': 0, 'totalSales': 0, '_id': "AKT New" }
+  ]);
+  const [plot, setPlot] = useState("Sale");
+  const plots = [
+    { val: "Sale", id: "sale" },
+    { val: "Customers", id: "customer" }
+  ]
   const handleChangeStore = (e) => {
-    setStore(e.target.value);
+    setStoreUp(e.target.value);
+  };
+  const handleChangeStoreParam = (e) => {
+    setStoreUp(e.target.value);
   };
   const handleEvent = (
     params,  // GridCellParams
     event,   // MuiEvent<React.MouseEvent<HTMLElement>>
     details, // GridCallbackDetails
   ) => {
-    // console.log(params, event, details)
   }
   const fetchSale = async () => {
     try {
       setLoad(true)
-      console.log(days, "days");
-      const res = await api.get(`/user/sale/${days}`,
+      const res = await api.get(`/sale/sales/${store}/${days}`,
         {
           headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
             'Authorization': document.cookie
           },
         }, { withCredentials: true });
@@ -120,34 +129,27 @@ export default function DataGridDemo(props) {
         const data = res.data;
         let y = [];
         let x = [];
-        if (data.reportOld?.length > 0 || data.reportNew?.length > 0) {
-          data.reportOld = data.reportOld.slice(0, Math.min(days, data.reportOld.length))
-          setSale(
-            data.reportOld.map(e => {
-              if (e.created) { e.created = new Date(e.created).toLocaleDateString('en-GB'); }
-              if (e.added) e.username = `${e.added.fname} ${e.added.lname}`
-
-              x.push(e.created);
-              y.push(e.sale);
-              return { ...e }
-            })
-          )
-          let xn = [];
-          let yn = [];
-          data.reportNew = data.reportNew.slice(0, Math.min(days, data.reportNew.length))
-          setSaleN(
-            data.reportNew.map(e => {
-              if (e.created) { e.created = new Date(e.created).toLocaleDateString('en-GB'); }
-              if (e.added) e.username = `${e.added.fname} ${e.added.lname}`
-              xn.push(e.created);
-              yn.push(e.sale);
-              return { ...e }
-            })
-          )
-          setX([...x]);
-          setY([...y]);
-          setXN([...xn]);
-          setYN([...yn]);
+        setSale(
+          data.reportOld.map(e => {
+            if (e.created) { e.created = new Date(e.created).toLocaleDateString('en-GB'); }
+            if (e.added) e.username = `${e.added.fname} ${e.added.lname}`
+            x.push(e.created);
+            y.push(e.sale);
+            return { ...e }
+          })
+        )
+        let xn = [];
+        let yn = [];
+        setX([...x]);
+        setY([...y]);
+        // if (store == "AKT Old") setSummary(data.summary[1]);
+        // else setSummary(data.summary[0]);
+        console.log(data.summary);
+        setSummary(data.summary);
+        if (data.prevSummary.length > 0)
+          setprevSum(data.prevSummary)
+        else {
+          setprevSum([{ 'count': 1, 'totalCustomers': 0, 'totalOnlinePayment': 0, 'totalSales': 0, '_id': "AKT New" }])
         }
       }
       setLoad(false)
@@ -155,76 +157,92 @@ export default function DataGridDemo(props) {
     catch (e) { console.log(e) }
   }
 
-  const updateSale = async(id) => {
+  const updateSale = async (id) => {
     try {
       setLoad(true);
-      const res = await Api.patch(`/sale/${id}/edit`,{
-      sale: sale,
-      customer:customer,
-      store:store,
-      paytm:paytm,
-      hdfc:hdfc,
-    },
-      {
-        headers: {
-          "Content-Type": "application/json",
-           Accept: "application/json",
-          'Authorization': document.cookie
-        }
+      const res = await Api.patch(`/sale/${id}/edit`, {
+        sale: sale,
+        customer: customer,
+        store: storeUp,
+        paytm: paytm,
+        hdfc: hdfc,
       },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': document.cookie
+          }
+        },
       )
-      console.log(res);
       handleClose();
       setLoad(false);
     } catch (error) {
-      
+
     }
   }
 
   const makeGraphAxes = (param) => {
     let y = [];
-    if (store === 'AKT Old') {
-      saleO.map(e => {
-        if (param === 'paytm') {
-          y.push(e.paytm);
-        }
-        else if (param === 'customer') {
-          y.push(e.customer)
-        }
-        else if (param === 'hdfc') {
-          y.push(e.hdfc)
-        }
-        else {
-          y.push(e.sale);
-        }
+    saleO.map(e => {
+      if (param === 'customer') {
+        y.push(e.customer)
       }
-
-      )
-      setY([...y]);
-    }
-    else {
-      saleN.map(e => {
-        if (param === 'paytm') {
-          y.push(e.paytm);
-        }
-        else if (param === 'customer') {
-          y.push(e.customer)
-        }
-        else if (param === 'hdfc') {
-          y.push(e.hdfc)
-        }
-        else {
-          y.push(e.sale);
-        }
+      else {
+        y.push(e.sale);
       }
-
-      )
-      setYN([...y]);
     }
+    )
+    setY([...y]);
   }
+  const containerStyle = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, 1fr)',
+    height: 'inherit'
+  };
+  // const makeGraphAxes = (param) => {
+  //   let y = [];
+  //   if (store === 'AKT Old') {
+  //     saleO.map(e => {
+  //       if (param === 'paytm') {
+  //         y.push(e.paytm);
+  //       }
+  //       else if (param === 'customer') {
+  //         y.push(e.customer)
+  //       }
+  //       else if (param === 'hdfc') {
+  //         y.push(e.hdfc)
+  //       }
+  //       else {
+  //         y.push(e.sale);
+  //       }
+  //     }
+
+  //     )
+  //     setY([...y]);
+  //   }
+  //   else {
+  //     saleN.map(e => {
+  //       if (param === 'paytm') {
+  //         y.push(e.paytm);
+  //       }
+  //       else if (param === 'customer') {
+  //         y.push(e.customer)
+  //       }
+  //       else if (param === 'hdfc') {
+  //         y.push(e.hdfc)
+  //       }
+  //       else {
+  //         y.push(e.sale);
+  //       }
+  //     }
+
+  //     )
+  //     setYN([...y]);
+  //   }
+  // }
   useEffect(() => {
     fetchSale();
-  }, [days])
+  }, [days, store])
   useEffect(() => {
     makeGraphAxes(param);
   }, [param, days, store])
@@ -242,17 +260,17 @@ export default function DataGridDemo(props) {
         >
           <Box sx={style}>
             <Typography id="modal-modal-title" variant="h4" align='center' component="p">
-            Report
+              Report
             </Typography>
-           
+
             <FormControl fullWidth margin="normal">
               <InputLabel id="demo-simple-select-helper-label">Store</InputLabel>
               <Select
                 align="left"
                 margin="normal"
-                labelId="role"
-                id="role-select"
-                value={store}
+                labelId="store-update"
+                id="store-update-select"
+                value={storeUp}
                 required
                 label="Store"
                 onChange={handleChangeStore}
@@ -267,10 +285,15 @@ export default function DataGridDemo(props) {
               label="Sale"
               fullWidth
               margin="normal"
-              InputProps={{ inputProps: { min: 0 } }}
               value={sale}
+              InputProps={{ inputProps: { min: 0 } }}
               type="number"
-              onChange={e => setSale(e.target.value)}
+              onChange={e => {
+                console.log(e.target.value);
+                setSales(e.target.value);
+                console.log(e.target.value);
+              }
+              }
             />
             <TextField
               required
@@ -306,68 +329,69 @@ export default function DataGridDemo(props) {
               onChange={e => setHdfc(e.target.value)}
             />
             <Typography id="modal-modal-description" sx={{ mt: 2 }} align='center' >
-              <Button align='center' variant='contained' color='success' onClick={(e) => {e.preventDefault(); updateSale(id); console.log("updated") }}>Save</Button>
+              <Button align='center' variant='contained' color='success' onClick={(e) => { e.preventDefault(); updateSale(id); console.log("updated") }}>Save</Button>
             </Typography>
           </Box>
         </Modal>
         <div className="col-12">
           <div className="row">
-            <div className=" order-md-1 order-2 col-md-7 col-12">
-              {store === 'AKT Old' && <> <Graph xdata={xDataO} ydata={yDataO} param={param} /> </>}
-              {store === 'AKT New' && <> <Graph xdata={xDataN} ydata={yDataN} param={param} />   </>}
+            <div className=" order-md-1 order-2 col-md-6 col-12">
+              {plots && plots.map((p) =>
+                <>
+                  <Fab key={p.id} variant="extended" size="small" className={param == p.id ? 'mx-md-5 mx-0 mt-3 param-button' : 'mx-5 mt-3'} onClick={() => { setParam(p.id) }}>
+                    {p.val}
+                  </Fab>
+                </>
+              )}
+              {<> <Graph xdata={xDataO} ydata={yDataO} param={param} /> </>}
             </div>
-            <div className=" order-md-2 order-1 col-md-5 col-12 mt-md-3">
-              <Select
-                align="left"
-                fullWidth
-                className='table-select'
-                labelId="role"
-                id="role-select"
-                value={store}
-                onChange={(e) => { setStore(e.target.value) }}
-              >
-                <MenuItem value="AKT Old">AKT Old</MenuItem>
-                <MenuItem value="AKT New">AKT New</MenuItem>
-              </Select>
-              <Select
-                className='table-select'
-                align="left"
-                fullWidth
-                margin="dense"
-                labelId="role"
-                id="role-select"
-                value={days}
-                // label="Days"
-                onChange={(e) => { setDays(e.target.value) }}
-              >
-                <MenuItem value="30"> Last 30 Days</MenuItem>
-                <MenuItem value="60">Last 2 Month</MenuItem>
-                <MenuItem value="180">Last 6 Month</MenuItem>
-                {/* <MenuItem value="Hdfc">HDFC</MenuItem> */}
-              </Select>
-              {/* </FormControl>
-              <FormControl> */}
-              <Select
-                className='table-select'
-                align="left"
-                fullWidth
-                margin="dense"
-                labelId="role"
-                id="role-select"
-                value={param}
-                // label="Param"
-                onChange={(e) => { setParam(e.target.value) }}
-              >
-                <MenuItem value="sale">Sale</MenuItem>
-                <MenuItem value="paytm">Paytm</MenuItem>
-                <MenuItem value="customer">Customer</MenuItem>
-                <MenuItem value="Hdfc">HDFC</MenuItem>
-              </Select>
+            <div className=" order-md-2 order-1 col-md-6 col-12 mt-md-3 mt-2">
+              <div className="container-fluid" >
+                <div className="row">
+                  <div className=" order-md-2 order-1 col-md-6 col-12 mt-md-3">
+                    <Select
+                      align="left"
+                      fullWidth
+                      className='table-select'
+                      labelId="store"
+                      id="store-select"
+                      value={store}
+                      onChange={(e) => { setStore(e.target.value) }}
+                    >
+                      <MenuItem value="AKT Old">AKT Old</MenuItem>
+                      <MenuItem value="AKT New">AKT New</MenuItem>
+                    </Select>
+                  </div>
+                  <div className=" order-md-2 order-1 col-md-6 col-12 mt-md-3">
+                    <Select
+                      className='table-select'
+                      align="left"
+                      fullWidth
+                      margin="dense"
+                      labelId="role"
+                      id="role-select"
+                      value={days}
+                      onChange={(e) => { setDays(e.target.value) }}
+                    >
+                      <MenuItem value="1"> This Month</MenuItem>
+                      <MenuItem value="6">Last 6 Month</MenuItem>
+                      <MenuItem value="12">Last 1 Year</MenuItem>
+                    </Select>
+                    {/* <Summary/> */}
+                  </div>
+                </div>
+                <div className="row" >
+                  <div className="col-12">
+                    {summary.length > 0 && <Summary summary={summary[0]} prevSum={prevSum[0]} />}
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
 
         </div>
-        {store === 'AKT Old' && <>
+        <>
           <Box>
             <DataGrid
               autoHeight
@@ -379,23 +403,24 @@ export default function DataGridDemo(props) {
               rowsPerPageOptions={[10]}
               loading={tableLoad}
               onRowClick={(params, event) => {
-                  if (!event.ignore) {
-                    console.log(params);
-                    setId(params.id);
-                    setSales(params.row.sale);
-                    setCustomer(params.row.customer)
-                    setPaytm(params.row.paytm);
-                    setHdfc(params.row.hdfc);
-                    handleOpen();
-                  }
-                }}
+                if (!event.ignore) {
+                  console.log(params);
+                  setId(params.row._id);
+                  setSales(params.row.sale);
+                  setCustomer(params.row.customer)
+                  setPaytm(params.row.paytm);
+                  setHdfc(params.row.hdfc);
+                  setStoreUp(params.row.store);
+                  handleOpen();
+                }
+              }}
               experimentalFeatures={{ newEditingApi: true }}
-              // components={{ Toolbar: GridToolbarExport }}
+            // components={{ Toolbar: GridToolbarExport }}
             />
           </Box>
         </>
-        }
-        {store === 'AKT New' && <>
+        {/* } */}
+        {/* {store === 'AKT New' && <>
           <Box >
             <DataGrid
               autoHeight
@@ -406,16 +431,16 @@ export default function DataGridDemo(props) {
               rowsPerPageOptions={[10]}
               loading={tableLoad}
               onRowClick={(params, event) => {
-                  if (!event.ignore) {
-                    console.log(params.id);
-                    handleOpen();
-                  }
-                }}
+                if (!event.ignore) {
+                  console.log(params.id);
+                  handleOpen();
+                }
+              }}
               experimentalFeatures={{ newEditingApi: true }}
-              // components={{ Toolbar: GridToolbarExport }}
+            // components={{ Toolbar: GridToolbarExport }}
             />
           </Box>
-        </>}
+        </>} */}
       </div>}
     </>
   );
