@@ -72,11 +72,11 @@ function User() {
   const { curUser, getUser } = useAuth();
   async function checkRole(){
     // let user = await getUser();
-    if(curUser?.role === 'Staff'){
+    if(curUser?.role === 'Staff'  && props.user.role !== "Store Associate" && props.user.role !== "Senior Store Associate" ){
       // console.log(curUser)
       navigate(`/profile/`+curUser?._id)
     }
-    else if(curUser?.role == 'CompOper'){
+    else if(curUser?.role == 'CompOper'  && props.user.role !== "Billing Associate"){
       navigate('/addReport')
     }
   }

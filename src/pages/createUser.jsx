@@ -196,8 +196,9 @@ function User() {
                       {curUser.role === 'Owner' &&
                           <MenuItem value="Manager">Manager</MenuItem>
                         }
-                      <MenuItem value="CompOper">Computer Operator</MenuItem>
-                      <MenuItem value="Staff">Staff</MenuItem>
+                      <MenuItem value="CompOper">Billing Associate</MenuItem>
+                      <MenuItem value="Store Associate">Staff</MenuItem>
+                      <MenuItem value="Senior Store Associate"> Senior Store Associate</MenuItem>
                     </Select>
                   </FormControl>
                   <FormControl fullWidth className='mt-3' >
