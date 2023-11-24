@@ -118,10 +118,10 @@ export default function HideAppBar(props: Props) {
                   {props.user && props.user.role !== 'Staff' && <MenuItem key={pages[1][0]} onClick={handleCloseNavMenu}>
                     <Typography textAlign="center"><Link className='nav-link' to={pages[1][1]}>{pages[1][0]}</Link> </Typography>
                   </MenuItem>}
-                  {props.user && props.user.role !== 'Staff' && props.user.role !== 'CompOper' && <MenuItem key={pages[2][0]} onClick={handleCloseNavMenu}>
+                  {props.user && props.user.role !== 'Staff' && props.user.role !== 'CompOper' && props.user.role !== "Store Associate" && props.user.role !== "Senior Store Associate" && props.user.role !== "Billing Associate" && <MenuItem key={pages[2][0]} onClick={handleCloseNavMenu}>
                     <Typography textAlign="center"><Link className='nav-link' to={pages[2][1]}>{pages[2][0]}</Link> </Typography>
                   </MenuItem>}
-                  {props.user && props.user.role !== 'Staff' && props.user.role !== 'CompOper' && <MenuItem key={pages[3][0]} onClick={handleCloseNavMenu}>
+                  {props.user && props.user.role !== 'Staff' && props.user.role !== 'CompOper' && props.user.role !== "Store Associate" && props.user.role !== "Senior Store Associate" && props.user.role !== "Billing Associate" && <MenuItem key={pages[3][0]} onClick={handleCloseNavMenu}>
                     <Typography textAlign="center"><Link className='nav-link' to={pages[3][1]}>{pages[3][0]}</Link> </Typography>
                   </MenuItem>}
                 </Menu>
@@ -160,14 +160,14 @@ export default function HideAppBar(props: Props) {
 
 
 
-                {props.user && props.user.role !== 'Staff' && <Button
+                {props.user && props.user.role !== 'Staff' && props.user.role !== "Store Associate" && props.user.role !== "Senior Store Associate" && <Button
                   key={pages[1][0]}
                   onClick={handleCloseNavMenu}
                   sx={{ my: 2, color: 'white', display: 'block' }}
                 >
                   <Link className='nav-link' to={pages[1][1]}>{pages[1][0]}</Link>
                 </Button>}
-                {props.user && props.user.role !== 'Staff' && props.user.role !== 'CompOper' && <Button
+                {props.user && props.user.role !== 'Staff' && props.user.role !== 'CompOper' && props.user.role !== "Store Associate" && props.user.role !== "Senior Store Associate" && props.user.role !== "Billing Associate" && <Button
                   key={pages[2][0]}
                   onClick={handleCloseNavMenu}
                   sx={{ my: 2, color: 'white', display: 'block' }}
@@ -175,7 +175,7 @@ export default function HideAppBar(props: Props) {
                   <Link className='nav-link' to={pages[2][1]}>{pages[2][0]}</Link>
                 </Button>
                 }
-                {props.user && props.user.role !== 'Staff' && props.user.role !== 'CompOper' && <Button
+                {props.user && props.user.role !== 'Staff' && props.user.role !== 'CompOper' && props.user.role !== "Store Associate" && props.user.role !== "Senior Store Associate" && props.user.role !== "Billing Associate" && <Button
                   key={pages[3][0]}
                   onClick={handleCloseNavMenu}
                   sx={{ my: 2, color: 'white', display: 'block' }}

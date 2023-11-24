@@ -12,6 +12,9 @@
     .responsive .card{
         width: 25rem !important;
     }
+    .containerStyle p{
+        margin: 0 !important; 
+    }
 }
 
 @media screen and (max-width:1000px) {

@@ -33,11 +33,11 @@ function User() {
     setRole(e.target.value);
   };
   async function checkRole(){
-    if(curUser?.role === 'Staff'){
+    if(curUser?.role === 'Staff' || curUser?.role === 'Store Associate' || curUser?.role === 'Senior Store Associate'){
       // console.log(curUser)
       navigate(`/profile/`+curUser?._id)
     }
-    else if(curUser?.role == 'CompOper'){
+    else if(curUser?.role == 'CompOper'  || curUser?.role === 'Billing Associate'){
       navigate('/addReport')
     }
   }
@@ -94,7 +94,7 @@ function User() {
     setBLoading(false);
   }
   useEffect(()=>{
-    // checkRole();
+    checkRole();
     // console.log(curUser)
   },[])
   return (

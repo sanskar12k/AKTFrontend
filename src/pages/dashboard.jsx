@@ -15,11 +15,11 @@ function Dashboard(){
       if(!curUser){
         navigate('/login')
       }
-      if(curUser?.role === 'Staff'){
+      if(curUser?.role === 'Staff' || curUser?.role === 'Store Associate' || curUser?.role === 'Senior Store Associate'){
         // console.log(user)
         navigate(`/profile/`+curUser?._id)
       }
-      else if(curUser?.role == 'CompOper'){
+      else if(curUser?.role == 'CompOper'  || curUser?.role === 'Billing Associate'){
         navigate('/addReport')
       }
     }
@@ -31,7 +31,7 @@ function Dashboard(){
         <>
         <NavBar user={curUser}/>
         <div className="table">
-        {curUser && curUser?.role !== 'CompOper' && curUser?.role !== 'Staff' && <Table /> }
+        {curUser && !["Billing Associate", "Store Associate", "Senior Store Associate", "CompOper", "Staff"].includes(curUser?.role) && <Table /> }
         </div>
         </>
     )

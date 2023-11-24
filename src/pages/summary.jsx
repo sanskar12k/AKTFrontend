@@ -5,7 +5,7 @@ const Summary = (props) => {
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
         height: 'inherit',
-        marginTop:'5px',
+        marginTop:'10px',
         padding:'0px'
     };
     const cellStyle11 = {
@@ -50,7 +50,7 @@ const Summary = (props) => {
         borderBottom: '1px solid black'
     };
     const cellStyle31 = {
-         padding: '0px',
+        padding: '0px',
         borderTop: '1px solid black',
         borderRight: '1px solid black',
         display:'flex',
@@ -58,13 +58,13 @@ const Summary = (props) => {
         justifyContent:'center'
     };
     const cellStyle32 = {
-         padding: '0px 8px',
+         padding: '0px 4px',
         borderLeft: '1px solid black',
         borderTop: '1px solid black',
         borderRight: '1px solid black',
     };
     const cellStyle33 = {
-         padding: '0px 8px',
+         padding: '0px 4px',
         borderLeft: '1px solid black',
         borderTop: '1px solid black',
     };
@@ -81,7 +81,7 @@ const Summary = (props) => {
     return (
         <div style={containerStyle} className='containerStyle'>
             <div style={cellStyle11}>
-                <h3> </h3>
+                <h4> </h4>
             </div>
             <div style={cellStyle12}>
                 <h3>  Total </h3>
@@ -90,7 +90,7 @@ const Summary = (props) => {
                 <h3>  Average(/day) </h3>
             </div>
             <div style={cellStyle21}>
-                <h3> Sales </h3>
+                <h4> Sales </h4>
             </div>
             <div style={cellStyle22}  className={props.prevSum.totalSales > props.summary.totalSales?'colorRed':'colorGreen'}>
                 <h3>  ₹{props.summary.totalSales.toLocaleString('en-IN')}</h3>
@@ -101,7 +101,7 @@ const Summary = (props) => {
                 <p style={{'textAlign':'right'}}> ₹{roundAndFormatIndianNumber(props.prevSum.totalSales / props.prevSum.count)} </p>
             </div>
             <div style={cellStyle31}>
-                <h3> Customers </h3>
+                <h4> Customers </h4>
             </div>
             <div style={cellStyle32} className={props.prevSum.totalCustomers > props.summary.totalCustomers?'colorRed':'colorGreen'} >
                 <h3> {props.summary.totalCustomers.toLocaleString('en-IN')} </h3>

@@ -468,8 +468,9 @@ function User() {
                         <MenuItem value=""></MenuItem>
                         {user.role === 'Owner' && <MenuItem value="Owner">Owner</MenuItem>}
                         <MenuItem value="Manager">Manager</MenuItem>
-                        <MenuItem value="CompOper">Computer Operator</MenuItem>
-                        <MenuItem value="Staff">Staff</MenuItem>
+                        <MenuItem value="Billing Associate">Billing Associate</MenuItem>
+                        <MenuItem value="Senior Store Associate">Senior Store Associate</MenuItem>
+                        <MenuItem value="Store Associate">Store Associate</MenuItem>
                       </Select>
                     </FormControl>}
                     {/* {!mailVerify && <div className='mb-2'> <Button variant="outlined"  color='success' margin="normal" onClick={handleSubmit}>Verify Phone Number</Button> </div> } */}

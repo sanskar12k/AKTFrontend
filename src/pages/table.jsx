@@ -199,47 +199,6 @@ export default function DataGridDemo(props) {
     gridTemplateColumns: 'repeat(2, 1fr)',
     height: 'inherit'
   };
-  // const makeGraphAxes = (param) => {
-  //   let y = [];
-  //   if (store === 'AKT Old') {
-  //     saleO.map(e => {
-  //       if (param === 'paytm') {
-  //         y.push(e.paytm);
-  //       }
-  //       else if (param === 'customer') {
-  //         y.push(e.customer)
-  //       }
-  //       else if (param === 'hdfc') {
-  //         y.push(e.hdfc)
-  //       }
-  //       else {
-  //         y.push(e.sale);
-  //       }
-  //     }
-
-  //     )
-  //     setY([...y]);
-  //   }
-  //   else {
-  //     saleN.map(e => {
-  //       if (param === 'paytm') {
-  //         y.push(e.paytm);
-  //       }
-  //       else if (param === 'customer') {
-  //         y.push(e.customer)
-  //       }
-  //       else if (param === 'hdfc') {
-  //         y.push(e.hdfc)
-  //       }
-  //       else {
-  //         y.push(e.sale);
-  //       }
-  //     }
-
-  //     )
-  //     setYN([...y]);
-  //   }
-  // }
   useEffect(() => {
     fetchSale();
   }, [days, store])
@@ -415,32 +374,9 @@ export default function DataGridDemo(props) {
                 }
               }}
               experimentalFeatures={{ newEditingApi: true }}
-            // components={{ Toolbar: GridToolbarExport }}
             />
           </Box>
         </>
-        {/* } */}
-        {/* {store === 'AKT New' && <>
-          <Box >
-            <DataGrid
-              autoHeight
-              getRowId={(row) => row._id}
-              rows={saleN}
-              columns={columns}
-              pageSize={10}
-              rowsPerPageOptions={[10]}
-              loading={tableLoad}
-              onRowClick={(params, event) => {
-                if (!event.ignore) {
-                  console.log(params.id);
-                  handleOpen();
-                }
-              }}
-              experimentalFeatures={{ newEditingApi: true }}
-            // components={{ Toolbar: GridToolbarExport }}
-            />
-          </Box>
-        </>} */}
       </div>}
     </>
   );
