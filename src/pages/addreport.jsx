@@ -113,7 +113,6 @@ function User() {
         <Box
           component="form"
           sx={{
-            // width: 500,
             maxWidth: '100%',
           }}
           noValidate
@@ -137,6 +136,7 @@ function User() {
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>
+            
             <FormControl fullWidth
              margin="dense"
              >
@@ -151,11 +151,12 @@ function User() {
                 label="Store"
                 onChange={handleChangeStore}
               >
-                {/* <MenuItem value=""></MenuItem> */}
                 <MenuItem value="AKT Old">AKT Old</MenuItem>
                 <MenuItem value="AKT New">AKT New</MenuItem>
+                <MenuItem value="Bakery">Bakery</MenuItem>
               </Select>
             </FormControl>
+
             <TextField
               required
               id="outlined-required"

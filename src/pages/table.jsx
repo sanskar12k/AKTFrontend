@@ -13,6 +13,9 @@ import { Button, Fab, InputLabel, Modal, TextField, Typography } from '@mui/mate
 import dayjs from 'dayjs';
 import Api from './api';
 import Summary from './summary';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 const columns: GridColDef[] = [
   {
     field: 'created',
@@ -74,23 +77,22 @@ export default function DataGridDemo(props) {
   const [saleO, setSale] = useState([]);
   const [xDataO, setX] = useState([]);
   const [yDataO, setY] = useState([]);
-  const [saleN, setSaleN] = useState([]);
-  const [xDataN, setXN] = useState([]);
-  const [yDataN, setYN] = useState([]);
   const [param, setParam] = useState('sale');
   const [days, setDays] = useState(1);
   const [tableLoad, setLoad] = useState(false);
   const [store, setStore] = useState('AKT New');
-  const [storeUp, setStoreUp] = useState('AKT Old');//
+  const [storeUp, setStoreUp] = useState('AKT Old');
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [report, setReport] = useState();
   const [sale, setSales] = useState(0);
   const [customer, setCustomer] = useState(0);
   const [paytm, setPaytm] = useState(0);
   const [hdfc, setHdfc] = useState(0);
-  const [value, setValue] = useState(
+  const [from, setFrom] = useState(
+    dayjs().set('year', 2024).set('month', 0).set('date', 1) // Set to February 5th, 2024
+  );
+  const [to, setTo] = useState(
     dayjs(Date.now())
   );
   const [id, setId] = useState();
@@ -118,7 +120,7 @@ export default function DataGridDemo(props) {
   const fetchSale = async () => {
     try {
       setLoad(true)
-      const res = await api.get(`/sale/sales/${store}/${days}`,
+      const res = await api.get(`/sale/sales/${store}/${days}/${from}/${to}`,
         {
           headers: {
             'Accept': 'application/json',
@@ -129,6 +131,8 @@ export default function DataGridDemo(props) {
         const data = res.data;
         let y = [];
         let x = [];
+        console.log(from, "start")
+        console.log(to, "end")
         setSale(
           data.reportOld.map(e => {
             if (e.created) { e.created = new Date(e.created).toLocaleDateString('en-GB'); }
@@ -201,7 +205,7 @@ export default function DataGridDemo(props) {
   };
   useEffect(() => {
     fetchSale();
-  }, [days, store])
+  }, [days, store, from, to])
   useEffect(() => {
     makeGraphAxes(param);
   }, [param, days, store])
@@ -307,7 +311,7 @@ export default function DataGridDemo(props) {
             <div className=" order-md-2 order-1 col-md-6 col-12 mt-md-3 mt-2">
               <div className="container-fluid" >
                 <div className="row">
-                  <div className=" order-md-2 order-1 col-md-6 col-12 mt-md-3">
+                  <div className=" order-md-2 order-1 col-md-4 col-12 mt-md-3">
                     <Select
                       align="left"
                       fullWidth
@@ -319,24 +323,44 @@ export default function DataGridDemo(props) {
                     >
                       <MenuItem value="AKT Old">AKT Old</MenuItem>
                       <MenuItem value="AKT New">AKT New</MenuItem>
+                      <MenuItem value="Bakery">Bakery</MenuItem>
                     </Select>
                   </div>
-                  <div className=" order-md-2 order-1 col-md-6 col-12 mt-md-3">
-                    <Select
-                      className='table-select'
-                      align="left"
-                      fullWidth
-                      margin="dense"
-                      labelId="role"
-                      id="role-select"
-                      value={days}
-                      onChange={(e) => { setDays(e.target.value) }}
+                  <div className=" order-md-2 order-1 col-md-4 col-12 mt-md-4 pt-md-3">
+                    <LocalizationProvider dateAdapter={AdapterDayjs}
                     >
-                      <MenuItem value="1"> This Month</MenuItem>
-                      <MenuItem value="6">Last 6 Month</MenuItem>
-                      <MenuItem value="12">Last 1 Year</MenuItem>
-                    </Select>
-                    {/* <Summary/> */}
+                      <DatePicker
+                        fullWidth
+                        label="From"
+                        // margin="dense"
+                        inputFormat="DD/MM/YYYY"
+                        value={from}
+                        align="left"
+                        onChange={(newValue) => {
+                          setFrom(newValue);
+                        }}
+                        className="date-picker"
+                        renderInput={(params) => <TextField {...params} />}
+                      />
+                    </LocalizationProvider>
+                  </div>
+                  <div className=" order-md-2 order-1 col-md-4 col-12 mt-md-4 pt-md-3">
+                    <LocalizationProvider dateAdapter={AdapterDayjs}
+                    >
+                      <DatePicker
+                        fullWidth
+                        label="To"
+                        margin="dense"
+                        inputFormat="DD/MM/YYYY"
+                        value={to}
+                        align="left"
+                        onChange={(newValue) => {
+                          setTo(newValue);
+                        }}
+                        className="date-picker"
+                        renderInput={(params) => <TextField {...params} />}
+                      />
+                    </LocalizationProvider>
                   </div>
                 </div>
                 <div className="row" >
@@ -383,3 +407,22 @@ export default function DataGridDemo(props) {
 }
 
 
+
+
+
+
+  {/* <Select
+                      className='table-select'
+                      align="left"
+                      fullWidth
+                      margin="dense"
+                      labelId="role"
+                      id="role-select"
+                      value={days}
+                      onChange={(e) => { setDays(e.target.value) }}
+                    >
+                      <MenuItem value="1"> This Month</MenuItem>
+                      <MenuItem value="2"> Last Month </MenuItem>
+                      <MenuItem value="6">Last 6 Month</MenuItem>
+                      <MenuItem value="12">Last 1 Year</MenuItem>
+                    </Select> */}
