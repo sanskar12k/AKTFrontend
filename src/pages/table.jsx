@@ -20,14 +20,14 @@ const columns: GridColDef[] = [
   {
     field: 'created',
     headerName: 'Date',
-    width: 200
+    width: 170
   },
-  // {
-  //   field: 'store',
-  //   headerName: 'Store',
-  //   sortable: false,
-  //   width: 180,
-  // },
+  {
+    field: 'day',
+    headerName: 'Day',
+    sortable: false,
+    width: 170,
+  },
   {
     field: 'sale',
     headerName: 'Sale',
@@ -135,10 +135,11 @@ export default function DataGridDemo(props) {
         console.log(to, "end")
         setSale(
           data.reportOld.map(e => {
-            if (e.created) { e.created = new Date(e.created).toLocaleDateString('en-GB'); }
+            if (e.created) { e.day = new Date(e.created).toLocaleDateString('en-GB', { weekday: 'long' }); e.created = new Date(e.created).toLocaleDateString('en-GB'); }
             if (e.added) e.username = `${e.added.fname} ${e.added.lname}`
             x.push(e.created);
             y.push(e.sale);
+
             return { ...e }
           })
         )
