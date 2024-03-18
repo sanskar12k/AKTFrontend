@@ -20,39 +20,44 @@ const columns: GridColDef[] = [
   {
     field: 'created',
     headerName: 'Date',
-    width: 170
+    width: 150
   },
   {
     field: 'day',
     headerName: 'Day',
     sortable: false,
-    width: 170,
+    width: 150,
   },
   {
     field: 'sale',
     headerName: 'Sale',
-    width: 200,
+    width: 130,
   },
   {
     field: 'customer',
     headerName: 'Customer',
-    width: 170,
+    width: 130,
   },
   {
     field: 'paytm',
     headerName: 'Paytm',
     // type: 'number',
-    width: 180,
+    width: 150,
   },
   {
     field: 'hdfc',
     headerName: 'HDFC',
-    width: 170,
+    width: 130,
+  },
+  {
+    field: 'average',
+    headerName: 'Average Bill Amount',
+    width:180
   },
   {
     field: 'addedName',
     headerName: 'Added by',
-    width: 200
+    width: 180
   }
 ];
 
@@ -137,6 +142,11 @@ export default function DataGridDemo(props) {
           data.reportOld.map(e => {
             if (e.created) { e.day = new Date(e.created).toLocaleDateString('en-GB', { weekday: 'long' }); e.created = new Date(e.created).toLocaleDateString('en-GB'); }
             if (e.added) e.username = `${e.added.fname} ${e.added.lname}`
+            if(e.sale & e.customer){e.average = (e.sale/e.customer).toFixed(2);}
+            else{
+              console.log(e.sale, 'e.sale');
+              console.log(e.customer, 'e.customer');
+            }
             x.push(e.created);
             y.push(e.sale);
 
