@@ -142,11 +142,7 @@ export default function DataGridDemo(props) {
           data.reportOld.map(e => {
             if (e.created) { e.day = new Date(e.created).toLocaleDateString('en-GB', { weekday: 'long' }); e.created = new Date(e.created).toLocaleDateString('en-GB'); }
             if (e.added) e.username = `${e.added.fname} ${e.added.lname}`
-            if(e.sale & e.customer){e.average = (e.sale/e.customer).toFixed(2);}
-            else{
-              console.log(e.sale, 'e.sale');
-              console.log(e.customer, 'e.customer');
-            }
+            e.average = (e.sale/e.customer).toFixed(2);
             x.push(e.created);
             y.push(e.sale);
 
