@@ -19,7 +19,7 @@ function Dashboard(){
         // console.log(user)
         navigate(`/profile/`+curUser?._id)
       }
-      else if(curUser?.role == 'CompOper'  || curUser?.role === 'Billing Associate'){
+      else if(curUser?.role == 'BillingAssociate'  || curUser?.role === 'Billing Associate'){
         navigate('/addReport')
       }
     }
@@ -31,7 +31,7 @@ function Dashboard(){
         <>
         <NavBar user={curUser}/>
         <div className="table">
-        {curUser && !["Billing Associate", "Store Associate", "Senior Store Associate", "CompOper", "Staff"].includes(curUser?.role) && <Table /> }
+        {curUser && !["Billing Associate", "Store Associate", "Senior Store Associate", "BillingAssociate", "Staff"].includes(curUser?.role) && <Table /> }
         </div>
         </>
     )

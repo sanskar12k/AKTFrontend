@@ -38,7 +38,7 @@ function User() {
       // console.log(curUser)
       navigate(`/profile/`+curUser?._id)
     }
-    else if(curUser?.role == 'CompOper'  || curUser?.role === 'Billing Associate'){
+    else if(curUser?.role == 'BillingAssociate'  || curUser?.role === 'Billing Associate'){
       navigate('/addReport')
     }
   }
