@@ -16,6 +16,7 @@ function User() {
   const [value, setValue] = useState(
     dayjs(Date.now())
   );
+  const [allStores, setAll] = useState([]);
   const [fname, setFname] = useState('');
   const [lname, setLname] = useState('');
   const [username, setUsername] = useState('');
@@ -41,6 +42,30 @@ function User() {
       navigate('/addReport')
     }
   }
+
+  const getAllStores = async () => {
+    try {
+      const res = await api.get(`/store/allStores`,
+        {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': document.cookie
+          },
+        },
+        {
+          withCredentials: true
+        }
+      );
+      if (res.status === 200) {
+        const data = res.data.stores;
+        setAll(data);
+        console.log(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setBLoading(true);
@@ -79,15 +104,13 @@ function User() {
         setUsername('')
       }
         else {
-          // console.log(user)
           toast.warn(user, {
             position: "top-center",
           });
         }
         setBLoading(false);
     } catch (error) {
-      console.log(error);
-      toast.warn(error.response.data.error, {
+      toast.warn(error.response.data.error.details[0].message, {
         position: "top-center",
       });
     }
@@ -95,7 +118,7 @@ function User() {
   }
   useEffect(()=>{
     checkRole();
-    // console.log(curUser)
+    getAllStores();
   },[])
   return (
     <>
@@ -196,9 +219,9 @@ function User() {
                       {curUser.role === 'Owner' &&
                           <MenuItem value="Manager">Manager</MenuItem>
                         }
-                      <MenuItem value="CompOper">Billing Associate</MenuItem>
-                      <MenuItem value="Store Associate">Staff</MenuItem>
-                      <MenuItem value="Senior Store Associate"> Senior Store Associate</MenuItem>
+                      <MenuItem value="BillingAssociate">Billing Associate</MenuItem>
+                      <MenuItem value="StoreAssociate">Staff</MenuItem>
+                      <MenuItem value="SeniorStoreAssociate"> Senior Store Associate</MenuItem>
                     </Select>
                   </FormControl>
                   <FormControl fullWidth className='mt-3' >
@@ -216,9 +239,14 @@ function User() {
                         setStore(e.target.value)
                       }}
                     >
-                      <MenuItem value=""></MenuItem>
-                      <MenuItem value="AKT Old">AKT Old</MenuItem>
-                      <MenuItem value="AKT New">AKT New</MenuItem>
+                     <MenuItem value=""></MenuItem>
+                    {
+                  allStores.map(store => {
+                    return (
+                      <MenuItem key={store._id} value={store.name}>{store.name}</MenuItem>
+                    )
+                  })
+                }
                     </Select>
                   </FormControl>
                   <TextField

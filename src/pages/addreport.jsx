@@ -16,6 +16,7 @@ import { LinearProgress } from '@mui/material';
 import { useAuth } from '../Context/Auth';
 import api from './api';
 function User() {
+  const [allStores, setAll] = useState([]);
   const [sale, setSale] = useState(0);
   const [customer, setCustomer] = useState(0);
   const [paytm, setPaytm] = useState(0);
@@ -93,6 +94,32 @@ function User() {
     }
     setBLoading(false);
   }
+
+  const getAllStores = async () => {
+    try {
+      const res = await api.get(`/store/allStores`,
+        {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': document.cookie
+          },
+        },
+        {
+          withCredentials: true
+        }
+      );
+      if (res.status === 200) {
+        const data = res.data.stores;
+        setAll(data);
+        console.log(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  useEffect(()=>{
+    getAllStores();
+  }, []);
   return (
     <>
       {loading && <LinearProgress/> }
@@ -151,9 +178,13 @@ function User() {
                 label="Store"
                 onChange={handleChangeStore}
               >
-                <MenuItem value="AKT Old">AKT Old</MenuItem>
-                <MenuItem value="AKT New">AKT New</MenuItem>
-                <MenuItem value="Bakery">Bakery</MenuItem>
+                {
+                  allStores.map(store => {
+                    return (
+                      <MenuItem key={store._id} value={store.name}>{store.name}</MenuItem>
+                    )
+                  })
+                }
               </Select>
             </FormControl>
 

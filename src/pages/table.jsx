@@ -52,7 +52,7 @@ const columns: GridColDef[] = [
   {
     field: 'average',
     headerName: 'Average Bill Amount',
-    width:180
+    width: 180
   },
   {
     field: 'addedName',
@@ -79,13 +79,14 @@ const style = {
   p: 3,
 };
 export default function DataGridDemo(props) {
+  const [allStores, setAll] = useState([]);
   const [saleO, setSale] = useState([]);
   const [xDataO, setX] = useState([]);
   const [yDataO, setY] = useState([]);
   const [param, setParam] = useState('sale');
   const [days, setDays] = useState(1);
   const [tableLoad, setLoad] = useState(false);
-  const [store, setStore] = useState('AKT New');
+  const [store, setStore] = useState('AKT Old');
   const [storeUp, setStoreUp] = useState('AKT Old');
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -103,7 +104,7 @@ export default function DataGridDemo(props) {
   const [id, setId] = useState();
   const [summary, setSummary] = useState([]);
   const [prevSum, setprevSum] = useState([
-    { 'count': 1, 'totalCustomers': 0, 'totalOnlinePayment': 0, 'totalSales': 0, '_id': "AKT New" }
+    { 'count': 1, 'totalCustomers': 0, 'totalOnlinePayment': 0, 'totalSales': 0, '_id': "AKT Cosmetics" }
   ]);
   const [plot, setPlot] = useState("Sale");
   const plots = [
@@ -122,6 +123,33 @@ export default function DataGridDemo(props) {
     details, // GridCallbackDetails
   ) => {
   }
+
+  const getAllStores = async () => {
+    try {
+      const res = await api.get(`/store/allStores`,
+        {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': document.cookie
+          },
+        },
+        {
+          withCredentials: true
+        }
+      );
+      if (res.status === 200) {
+        const data = res.data.stores;
+        setAll(data);
+        console.log(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  // useEffect(()=>{
+  //   getAllStores();
+  // }, []);
+  //get Sale for a given store from to to days
   const fetchSale = async () => {
     try {
       setLoad(true)
@@ -142,7 +170,7 @@ export default function DataGridDemo(props) {
           data.reportOld.map(e => {
             if (e.created) { e.day = new Date(e.created).toLocaleDateString('en-GB', { weekday: 'long' }); e.created = new Date(e.created).toLocaleDateString('en-GB'); }
             if (e.added) e.username = `${e.added.fname} ${e.added.lname}`
-            e.average = (e.sale/e.customer).toFixed(2);
+            e.average = (e.sale / e.customer).toFixed(2);
             x.push(e.created);
             y.push(e.sale);
 
@@ -160,7 +188,7 @@ export default function DataGridDemo(props) {
         if (data.prevSummary.length > 0)
           setprevSum(data.prevSummary)
         else {
-          setprevSum([{ 'count': 1, 'totalCustomers': 0, 'totalOnlinePayment': 0, 'totalSales': 0, '_id': "AKT New" }])
+          setprevSum([{ 'count': 1, 'totalCustomers': 0, 'totalOnlinePayment': 0, 'totalSales': 0, '_id': "AKT Cosmetics" }])
         }
       }
       setLoad(false)
@@ -212,6 +240,7 @@ export default function DataGridDemo(props) {
   };
   useEffect(() => {
     fetchSale();
+    getAllStores();
   }, [days, store, from, to])
   useEffect(() => {
     makeGraphAxes(param);
@@ -245,8 +274,13 @@ export default function DataGridDemo(props) {
                 label="Store"
                 onChange={handleChangeStore}
               >
-                <MenuItem value="AKT Old">AKT Old</MenuItem>
-                <MenuItem value="AKT New">AKT New</MenuItem>
+                {
+                  allStores.map(store => {
+                    return (
+                      <MenuItem key={store._id} value={store.name}>{store.name}</MenuItem>
+                    )
+                  })
+                }
               </Select>
             </FormControl>
             <TextField
@@ -328,9 +362,13 @@ export default function DataGridDemo(props) {
                       value={store}
                       onChange={(e) => { setStore(e.target.value) }}
                     >
-                      <MenuItem value="AKT Old">AKT Old</MenuItem>
-                      <MenuItem value="AKT New">AKT New</MenuItem>
-                      <MenuItem value="Bakery">Bakery</MenuItem>
+                      {
+                        allStores.map(store => {
+                          return (
+                            <MenuItem key={store._id} value={store.name}>{store.name}</MenuItem>
+                          )
+                        })
+                      }
                     </Select>
                   </div>
                   <div className=" order-md-2 order-1 col-md-4 col-12 mt-md-4 pt-md-3">
@@ -418,7 +456,7 @@ export default function DataGridDemo(props) {
 
 
 
-  {/* <Select
+{/* <Select
                       className='table-select'
                       align="left"
                       fullWidth
