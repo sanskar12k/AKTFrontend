@@ -1,5 +1,5 @@
 import axios from "axios";
-    const api = "https://akt-backend.onrender.com/"
+    const api = "https://akt-backend.web.app/"
   // const api = "http://localhost:8000/"
 
 const Api = axios.create({
