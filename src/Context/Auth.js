@@ -20,8 +20,8 @@ export function AuthProvider({ children }) {
               }, {
                 headers: {
                   "Content-Type": "application/json"
-                },
-                withCredentials: true,
+                }
+                // withCredentials: true,
               });
             const token = res.data.token;
             document.cookie = `token=${token}; path=/;`;
@@ -40,7 +40,7 @@ export function AuthProvider({ children }) {
             // console.log(document.cookie)
             const res = await api.get('/user/userPro/',
             {
-                withCredentials: true
+                withCredentials: false
               ,  headers: {
                 'Authorization': document.cookie,
                 'Content-Type': 'application/json'
